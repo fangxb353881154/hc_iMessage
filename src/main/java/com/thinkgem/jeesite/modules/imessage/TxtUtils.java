@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.FileUtils;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskChild;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskPhone;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
@@ -34,26 +35,23 @@ public class TxtUtils {
         path = request.getSession().getServletContext().getRealPath("") + path;
         File file = new File(path);
         if (!file.exists() && !file.isDirectory()) {
-            System.out.println("TxtUtils.getRequestPath "+path + "目录不存在，需要创建");
+            System.out.println("TxtUtils.getRequestPath " + path + "目录不存在，需要创建");
             //创建目录
             file.mkdir();
         }
         return path;
     }
 
-    public static String getTxtPath() {
-        return getRequestPath(TXT_PATH + "/" + UserUtils.getUser().getId());
-    }
 
     public static List<String> readTxt(String fileName) {
         File file = new File(fileName);
         //判断目标文件所在的目录是否存在
         if (!file.getParentFile().exists()) {
             //如果目标文件所在的目录不存在，则创建父目录
-            System.out.println("------------------目标文件所在目录不存在，准备创建它！");
-            if (!file.getParentFile().mkdirs()) {
+            System.out.println("------------------目标文件所在目录不存在--------------");
+            /*if (!file.getParentFile().mkdirs()) {
                 throw new RuntimeException("创建目标文件所在目录失败！");
-            }
+            }*/
         }
         return readTxt(file);
     }
@@ -71,7 +69,7 @@ public class TxtUtils {
             }
         } catch (IOException e) {
             throw new RuntimeException("读取任务发送号码txt文件失败！");
-        }finally {
+        } finally {
             if (bufRead != null) {
                 try {
                     bufRead.close();
@@ -121,22 +119,28 @@ public class TxtUtils {
         }
     }
 
-    public static String getPath(Date date) {
-        String path = new SimpleDateFormat("YY/MM/dd/").format(date);
-        return getTxtPath() + "/" + path;
+    public static String getPath(Date date, User user) {
+        String path = "";
+        if (user == null) {
+            path= getRequestPath(TXT_PATH);
+        } else {
+            path= getRequestPath(TXT_PATH + "/" + user.getId());
+        }
+        return path + getDatePath(date);
+    }
+
+    public static String getDatePath(Date date) {
+        return "/" + new SimpleDateFormat("YY/MM/dd/").format(date);
+    }
+
+    public static String getTxtPathByUserId(String userId){
+        return getRequestPath(TXT_PATH + "/" + userId);
     }
 
     public static String getFileName(HcTaskPhone taskPhone) {
         String fileName = taskPhone.getTaskId() + "_" + taskPhone.getTaskChildId() + ".txt";
 
-       /* File filePath = new File(path);
-        if (!filePath.exists() && !filePath.isDirectory()) {
-            System.out.println(filePath + "目录不存在，需要创建");
-            //创建目录
-            filePath.mkdir();
-        }*/
-
-        fileName = getPath(taskPhone.getCreateDate()) + fileName;
+        fileName = getTxtPathByUserId(taskPhone.getCreateBy().getId()) + getDatePath(taskPhone.getCreateDate()) + fileName;
 
         System.out.println("txt path : " + fileName);
         return fileName;
