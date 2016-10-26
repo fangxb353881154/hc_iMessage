@@ -133,7 +133,7 @@
 			a.del_flag AS "delFlag"
 		FROM hc_task t JOIN hc_task_child a on a.task_id = t.id and a.task_status = '0'
 		WHERE
-			t.del_flag = '0' AND (t.task_status = '0' OR (t.task_status = '2' AND t.type != '1')) AND t.create_by = #{createBy.id}
+			t.del_flag = '0' AND (t.task_status = '0' OR (t.task_status = '2' AND t.type != '1')) AND t.create_by = #{id}
 		LIMIT 1;
 	</select>
 

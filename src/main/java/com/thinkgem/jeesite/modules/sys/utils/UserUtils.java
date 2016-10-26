@@ -68,6 +68,18 @@ public class UserUtils {
 		}
 		return user;
 	}
+
+	public static User getInUser(String id){
+		User user = (User) CacheUtils.get(USER_CACHE, USER_CACHE_ID_+"In_" + id);
+		if (user == null) {
+			user = userDao.get(id);
+			if (user == null){
+				return null;
+			}
+			CacheUtils.put(USER_CACHE, USER_CACHE_ID_ + "In_" + user.getId(), user);
+		}
+		return user;
+	}
 	
 	/**
 	 * 根据登录名获取用户

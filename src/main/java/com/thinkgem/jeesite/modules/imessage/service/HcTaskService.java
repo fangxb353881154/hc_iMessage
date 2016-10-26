@@ -76,7 +76,7 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
             /**
              * 删除子任务文件
              */
-            String path = TxtUtils.getPath(hcTask.getCreateDate());
+            String path = TxtUtils.getPath(hcTask.getCreateDate(),UserUtils.getUser());
             FileUtils.deleteFile(FileUtils.getFilesByPathPrefix(new File(path), hcTask.getId()));
         }
 
@@ -132,36 +132,7 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
             }else {
                 throw new RuntimeException("保存失败，号码库存不足！");
             }
-
-        } /*else if (StringUtils.equals(hcTask.getType(), "3")) {
-            //随机号码
-			int count = Integer.valueOf(hcTask.getCount());
-
-			List<String> phoneList = getPhoneListByTaskAreaId(hcTask.getArea().getId(), count);
-			if (phoneList != null && phoneList.size() == count) {
-				int listInt = 0;
-				while (listInt < count) {
-					List<HcRandPhone> list = phoneList.subList(listInt, (listInt + GROUP_NUMBER) > count ? count : listInt + GROUP_NUMBER);
-					listInt += GROUP_NUMBER;
-					//添加子任务
-					taskChild = new HcTaskChild();
-					taskChild.setTaskId(hcTask.getId());
-					taskChild.setCount(list.size() + "");
-					taskChild.preInsert();
-					hcTaskChildDao.insert(taskChild);
-					//添加任务号码
-					taskPhone.setTaskChildId(taskChild.getId());
-					taskPhone.setPhoneList(Collections3.extractToList(list, "phone"));
-					//hcTaskPhoneDao.batchInsert(taskPhone);
-					TxtUtils.writeTxt(taskPhone);//任务号码写入txt文件
-					//更新使用次数
-					hcRandPhoneDao.updateNumberInPhoneId(Collections3.extractToList(list, "id"));
-				}
-			}else {
-				throw new RuntimeException("保存失败，号码库存不足！");
-			}
-		}*/
-
+        }
     }
 
     @Transactional(readOnly = false)
@@ -169,7 +140,7 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
         super.delete(hcTask);
         hcTaskChildDao.deleteByTaskId(hcTask.getId());
         //
-        String path = TxtUtils.getPath(hcTask.getCreateDate());
+        String path = TxtUtils.getPath(hcTask.getCreateDate(), UserUtils.getUser());
         FileUtils.deleteFile(FileUtils.getFilesByPathPrefix(new File(path), hcTask.getId()));
     }
 
@@ -328,6 +299,6 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
         hcTaskChildDao.deleteAll(user);
         hcTaskPhoneDao.deleteAll(user);
 
-        FileUtils.deleteDirectory(TxtUtils.getTxtPath());
+        FileUtils.deleteDirectory(TxtUtils.getTxtPathByUserId(user.getId()));
     }
 }

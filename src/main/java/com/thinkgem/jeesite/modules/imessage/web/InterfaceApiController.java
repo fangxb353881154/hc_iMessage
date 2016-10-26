@@ -52,7 +52,7 @@ public class InterfaceApiController {
         Map<String, Object> map = Maps.newHashMap();
         HcApple apple = new HcApple();
         apple.setIsUse("0");
-        User user = UserUtils.get(userId);
+        User user = UserUtils.getInUser(userId);
         if (user == null) {
             map.put("flag", "0");
             map.put("msg", "用户ID错误，请联系管理员！");
@@ -86,7 +86,7 @@ public class InterfaceApiController {
     @RequestMapping(value = "/task/getTask")
     public Map<String, Object> getTask(String SN, String account, String userId) {
         Map<String, Object> result = Maps.newHashMap();
-        User user = UserUtils.get(userId);
+        User user = UserUtils.getInUser(userId);
         if (user == null) {
             result.put("flag", "0");
             result.put("msg", "用户ID错误，请联系管理员！");
@@ -108,6 +108,8 @@ public class InterfaceApiController {
                 taskPhone.setTaskId(taskId);
                 taskPhone.setTaskChildId(taskChild.getId());
                 taskPhone.setCreateDate(taskChild.getCreateDate());
+                taskPhone.setCreateBy(user);
+
                     String phoneStr = "";
                 if (StringUtils.equals(task.getType(), "1")) {
                     //指定号码段
@@ -132,15 +134,14 @@ public class InterfaceApiController {
                 throw new RuntimeException("获取发送任务失败，未找到可用任务！");
             }
         } catch (Exception e) {
-            e.printStackTrace();
             result = Maps.newHashMap();
             result.put("flag", "0");
             result.put("msg", e.getMessage());
-            if (task != null) {
+            /*if (task != null) {
                 //任务未获取到发送号码，将状态 >> 3
                 updateTaskStatus(task, "3");
                 updateTaskChildStatus(taskChild, "3");
-            }
+            }*/
             return result;
         }
     }
