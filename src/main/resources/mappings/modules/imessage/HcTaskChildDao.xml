@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.imessage.dao.HcTaskChildDao">
+    
+	<sql id="hcTaskChildColumns">
+		a.id AS "id",
+		a.task_id AS "taskId",
+		a.count AS "count",
+		a.update_by AS "updateBy.id",
+		a.create_by AS "createBy.id",
+		a.user_id AS "user.id",
+		a.task_status AS "taskStatus",
+		a.success_number AS "successNumber",
+		a.update_date AS "updateDate",
+		a.create_date AS "createDate",
+		a.del_flag AS "delFlag",
+		u6.name AS "user.name"
+	</sql>
+	
+	<sql id="hcTaskChildJoins">
+		LEFT JOIN sys_user u6 ON u6.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="HcTaskChild">
+		SELECT 
+			<include refid="hcTaskChildColumns"/>
+		FROM hc_task_child a
+		<include refid="hcTaskChildJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="HcTaskChild">
+		SELECT 
+			<include refid="hcTaskChildColumns"/>
+		FROM hc_task_child a
+		<include refid="hcTaskChildJoins"/>
+		<where>
+			1=1
+			<if test="taskId != null and taskId !=''" >
+				and a.task_id = #{taskId}
+			</if>
+			<if test="taskStatus != null and taskStatus !=''" >
+				and a.task_status = #{taskStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="HcTaskChild">
+		SELECT 
+			<include refid="hcTaskChildColumns"/>
+		FROM hc_task_child a
+		<include refid="hcTaskChildJoins"/>
+		<where>
+			a.del_flag = '0'
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hc_task_child(
+			id,
+			task_id,
+			count,
+			update_by,
+			create_by,
+			task_status,
+			success_number,
+			update_date,
+			create_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{taskId},
+			#{count},
+			#{updateBy.id},
+			#{createBy.id},
+			'0',
+			'0',
+			#{updateDate},
+			#{createDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE hc_task_child SET 	
+			task_id = #{taskId},
+			count = #{count},
+			update_by = #{updateBy.id},
+			task_status = #{taskStatus},
+			success_number = #{successNumber},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE hc_task_child SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteByTaskId">
+		DELETE FROM hc_task_child WHERE task_id = #{taskId}
+	</update>
+
+	<select id="getTaskByInterface" resultType="HcTaskChild">
+		SELECT
+			a.id AS "id",
+			a.task_id AS "taskId",
+			a.count AS "count",
+			a.update_by AS "updateBy.id",
+			a.create_by AS "createBy.id",
+			a.user_id AS "user.id",
+			a.task_status AS "taskStatus",
+			a.success_number AS "successNumber",
+			a.update_date AS "updateDate",
+			a.create_date AS "createDate",
+			a.del_flag AS "delFlag"
+		FROM hc_task t JOIN hc_task_child a on a.task_id = t.id and a.task_status = '0'
+		WHERE
+			t.del_flag = '0' AND (t.task_status = '0' OR (t.task_status = '2' AND t.type != '1')) AND t.create_by = #{createBy.id}
+		LIMIT 1;
+	</select>
+
+	<update id="deleteAll">
+		DELETE  FROM hc_task_child WHERE create_by = #{id}
+	</update>
+</mapper>

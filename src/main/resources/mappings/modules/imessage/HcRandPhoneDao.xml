@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.imessage.dao.HcRandPhoneDao">
+    
+	<sql id="hcRandPhoneColumns">
+		a.id AS "id",
+		a.phone AS "phone",
+		a.use_status AS "useStatus",
+		a.area_id AS "area.id",
+		a.create_by AS "createBy.id",
+		a.update_by AS "updateBy.id",
+		a.use_number AS "useNumber",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="hcRandPhoneJoins">
+		LEFT JOIN sys_area a4 ON a4.id = a.area_id
+	</sql>
+    
+	<select id="get" resultType="HcRandPhone">
+		SELECT 
+			<include refid="hcRandPhoneColumns"/>
+		FROM hc_rand_phone a
+		<include refid="hcRandPhoneJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="HcRandPhone">
+		SELECT 
+			<include refid="hcRandPhoneColumns"/>
+		FROM hc_rand_phone a
+
+		<where>
+			1=1
+			<if test="phone != null and phone != ''">
+				AND a.phone = #{phone}
+			</if>
+			<if test="area != null and area.id != null and area.id != ''">
+				AND a.area_id = #{area.id}
+			</if>
+		</where>
+		<!--choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.use_number
+			</otherwise>
+		</choose -->
+	</select>
+	
+	<select id="findAllList" resultType="HcRandPhone">
+		SELECT 
+			<include refid="hcRandPhoneColumns"/>
+		FROM hc_rand_phone a
+		<include refid="hcRandPhoneJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hc_rand_phone(
+			id,
+			phone,
+			status,
+			area_id,
+			create_by,
+			update_by,
+			use_number,
+			create_date,
+			update_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{phone},
+			#{status},
+			#{area.id},
+			#{createBy.id},
+			#{updateBy.id},
+			#{useNumber},
+			#{createDate},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE hc_rand_phone SET 	
+			phone = #{phone},
+			status = #{status},
+			area_id = #{area.id},
+			update_by = #{updateBy.id},
+			use_number = #{useNumber},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE hc_rand_phone SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteAllTemp">
+		DELETE FROM hc_rand_phone_temp
+	</update>
+
+	<select id="batchInsertTemp">
+		INSERT into hc_rand_phone_temp(id,phone,area_id,create_by,create_date,use_number)
+		<foreach collection="phoneList" item="str" separator=" union all ">
+			SELECT UUID(),#{str}, #{area.id} ,#{createBy.id},#{createDate},0
+		</foreach>
+	</select>
+
+	<update id="updateRepeatState">
+		update hc_rand_phone_temp t, hc_rand_phone a set t.is_repeat='1' where t.phone = a.phone and t.area_id = a.area_id
+	</update>
+
+	<update id="syncPhone">
+	INSERT INTO hc_rand_phone(
+		id,		phone,		area_id,		create_by,		update_by,		use_number,		create_date,
+		update_date,		del_flag )
+	SELECT
+		a.id,	a.phone,	a.area_id,		a.create_by,	a.update_by,	a.use_number,	a.create_date,
+		a.update_date,		a.del_flag
+	FROM
+		hc_rand_phone_temp a
+	WHERE
+		a.is_repeat = '0'
+
+	</update>
+
+	<select id="findTempList" resultType="HcRandPhoneTemp">
+		SELECT
+		a.is_repeat,
+		<include refid="hcRandPhoneColumns"/>
+		FROM hc_rand_phone_temp a
+		<include refid="hcRandPhoneJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="phone != null and phone != ''">
+				AND a.phone = #{phone}
+			</if>
+			<if test="isRepeat != null and isRepeat != ''">
+				AND a.is_repeat = #{isRepeat}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findLimitList" resultType="HcRandPhone">
+		SELECT
+			a.id AS "id",
+			a.phone AS "phone",
+			a.use_status AS "useStatus",
+			a.area_id AS "area.id",
+			a.create_by AS "createBy.id",
+			a.update_by AS "updateBy.id",
+			a.use_number AS "useNumber",
+			a.create_date AS "createDate",
+			a.update_date AS "updateDate",
+			a.del_flag AS "delFlag"
+		FROM hc_rand_phone a
+		<where>
+			a.del_flag = '0'
+			<if test="area != null and area.id != null and area.id != ''">
+				AND a.area_id = #{area.id}
+			</if>
+		</where>
+		ORDER BY a.use_number limit #{limitNum}
+	</select>
+
+	<update id="updateNumberInPhoneId">
+		UPDATE hc_rand_phone SET use_number=use_number+1 WHERE id IN
+		<foreach collection="list" item="phoneId"  open="(" separator="," close=")">
+			#{phoneId}
+		</foreach>
+
+	</update>
+
+</mapper>
