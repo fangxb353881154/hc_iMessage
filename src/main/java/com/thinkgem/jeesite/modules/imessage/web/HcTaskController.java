@@ -101,6 +101,7 @@ public class HcTaskController extends BaseController {
 	@RequiresPermissions("imessage:task:edit")
 	@RequestMapping(value = "save")
 	public String save(HcTask hcTask, Model model, RedirectAttributes redirectAttributes, MultipartFile file) {
+		logger.info("-----------------------------进来了！！");
 	    if (StringUtils.equals(hcTask.getType(), "2")){
 	        //任务类型=3  指定号码 计算号码数 TODO
 			String fileName = file.getOriginalFilename();
@@ -137,6 +138,7 @@ public class HcTaskController extends BaseController {
 			hcTaskService.save(hcTask);
 			addMessage(redirectAttributes, "保存发送任务成功");
 		}catch (Exception e){
+			e.printStackTrace();
 			addMessage(redirectAttributes, "保存失败，失败原因:"+e.getMessage());
 		}
 

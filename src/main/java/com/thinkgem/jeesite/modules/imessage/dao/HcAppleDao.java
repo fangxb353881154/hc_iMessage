@@ -38,4 +38,6 @@ public interface HcAppleDao extends CrudDao<HcApple> {
     void syncAppleId();
 
     void deleteAll(User user);
+
+    void updateAllIsUse(User user);
 }

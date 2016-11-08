@@ -115,7 +115,7 @@
 	</insert>
 
 	<update id="updateRepeatState">
-		update hc_apple_temp t, hc_apple a set t.is_repeat='1' where t.apple_id = a.apple_id
+		update hc_apple_temp t, hc_apple a set t.is_repeat='1' where t.apple_id = a.apple_id and t.create_by = a.create_by
 	</update>
 
 	<update id="deleteAllAppleTemp">
@@ -163,5 +163,9 @@
 
 	<update id="deleteAll">
 		DELETE FROM hc_apple WHERE create_by = #{id}
+	</update>
+
+	<update id="updateAllIsUse">
+		UPDATE hc_apple SET is_use='0' WHERE create_by = ${id}
 	</update>
 </mapper>

@@ -50,6 +50,8 @@
             <input id="btnImport" class="btn btn-primary" type="button" value="导入"/>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <input type="button" class="btn btn-warning" value="一键清空账号" id="btnDeleteAll" onclick="return confirmx('确认要清空所有账号吗？', '${ctx}/imessage/appleId/deleteAll');"/>
+            &nbsp;&nbsp;
+            <input type="button" class="btn btn-danger" value="一键还原账号状态" id="btnUpdateAllIsUse" onclick="return confirmx('确认将所有账号使用状态还原吗？', '${ctx}/imessage/appleId/updateAllIsUse');"/>
         </li>
 
         <li class="clearfix"></li>

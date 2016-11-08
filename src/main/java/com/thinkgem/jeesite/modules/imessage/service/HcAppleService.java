@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.imessage.dao.HcAppleDao;
 import com.thinkgem.jeesite.modules.imessage.entity.HcApple;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,5 +66,9 @@ public class HcAppleService extends CrudService<HcAppleDao, HcApple> {
 	public void deleteAll() {
 		dao.deleteAll(UserUtils.getUser());
 	}
-	
+
+	@Transactional(readOnly = false)
+	public void updateAllIsUse(User user){
+		dao.updateAllIsUse(user);
+	}
 }

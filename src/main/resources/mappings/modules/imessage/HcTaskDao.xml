@@ -129,9 +129,7 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE hc_task SET 
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		DELETE  FROM hc_task WHERE id = #{id}
 	</update>
 
 

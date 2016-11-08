@@ -85,10 +85,6 @@ public class MenuController extends BaseController {
 			addMessage(redirectAttributes, "越权操作，只有超级管理员才能添加或修改数据！");
 			return "redirect:" + adminPath + "/sys/role/?repage";
 		}
-		if(Global.isDemoMode()){
-			addMessage(redirectAttributes, "演示模式，不允许操作！");
-			return "redirect:" + adminPath + "/sys/menu/";
-		}
 		if (!beanValidator(model, menu)){
 			return form(menu, model);
 		}

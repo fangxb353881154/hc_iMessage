@@ -12,6 +12,8 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +31,7 @@ import java.util.List;
 public class TxtUtils {
 
     public static String TXT_PATH = "/taskTxt";
+    public static Logger logger = LoggerFactory.getLogger(TxtUtils.class);
 
     public static String getRequestPath(String path) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -115,6 +118,7 @@ public class TxtUtils {
                     pw.close();
 
             } catch (IOException e) {
+                throw new RuntimeException("保存失败，write close 失败！");
             }
         }
     }
@@ -142,7 +146,7 @@ public class TxtUtils {
 
         fileName = getTxtPathByUserId(taskPhone.getCreateBy().getId()) + getDatePath(taskPhone.getCreateDate()) + fileName;
 
-        System.out.println("txt path : " + fileName);
+        logger.info("------------------txt path : " + fileName);
         return fileName;
     }
 

@@ -146,4 +146,11 @@ public class HcAppleController extends BaseController {
 		addMessage(redirectAttributes, "清空appleId账号成功");
 		return "redirect:" + Global.getAdminPath() + "/imessage/appleId/list?repage";
 	}
+
+	@RequestMapping(value = "updateAllIsUse")
+	public String updateAllIsUse(RedirectAttributes redirectAttributes) {
+		hcAppleService.updateAllIsUse(UserUtils.getUser());
+		addMessage(redirectAttributes, "还原appleId状态成功");
+		return "redirect:" + Global.getAdminPath() + "/imessage/appleId/list?repage";
+	}
 }

@@ -61,6 +61,12 @@ public class InterfaceApiController {
         apple.setCreateBy(user);
         List<HcApple> appleList = hcAppleService.findList(apple);
 
+        if (appleList == null || appleList.size() == 0) {
+            //批量还原ID 使用状态
+            hcAppleService.updateAllIsUse(user);
+            appleList = hcAppleService.findList(apple);
+        }
+
         try {
             if (appleList != null && appleList.size() > 0) {
                 DesUtils des = new DesUtils();

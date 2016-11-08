@@ -127,7 +127,9 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
                     //添加任务号码
                     taskPhone.setTaskChildId(taskChild.getId());
                     taskPhone.setPhoneList(list);
+                    logger.info("-----------------开始写入文件--------------");
                     TxtUtils.writeTxt(taskPhone);//任务号码写入txt文件
+                    logger.info("-----------------开始写入文件 end --------------");
                 }
             }else {
                 throw new RuntimeException("保存失败，号码库存不足！");
@@ -207,7 +209,8 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
             if (isComplete) {
                 task.setTaskStatus("1");
             }
-            task.setSuccessNumber(task.getSuccessNumber() + Integer.valueOf(taskVo.getSuccessnum()));
+            int successNumber = Integer.valueOf(task.getSuccessNumber()) + Integer.valueOf(taskVo.getSuccessnum());
+            task.setSuccessNumber(String.valueOf(successNumber));
             dao.update(task);
         }
     }
