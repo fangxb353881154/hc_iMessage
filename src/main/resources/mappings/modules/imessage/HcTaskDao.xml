@@ -129,7 +129,7 @@
 	</update>
 	
 	<update id="delete">
-		DELETE  FROM hc_task WHERE id = #{id}
+		UPDATE hc_task SET  del_flag = #{DEL_FLAG_DELETE} WHERE id = #{id}
 	</update>
 
 
@@ -157,6 +157,6 @@
 
 
 	<update id="deleteAll">
-		DELETE  FROM hc_task WHERE create_by = #{id}
+		UPDATE hc_task SET  del_flag = #{DEL_FLAG_DELETE} WHERE create_by = #{id}
 	</update>
 </mapper>
