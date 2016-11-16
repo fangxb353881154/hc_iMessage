@@ -22,11 +22,13 @@ import com.thinkgem.jeesite.modules.sys.entity.Area;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -129,6 +131,7 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
                     taskPhone.setPhoneList(list);
                     logger.info("-----------------开始写入文件--------------");
                     TxtUtils.writeTxt(taskPhone);//任务号码写入txt文件
+
                     logger.info("-----------------开始写入文件 end --------------");
                 }
             }else {
@@ -300,8 +303,31 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
         User user = UserUtils.getUser();
         dao.deleteAll(user);
         hcTaskChildDao.deleteAll(user);
-        hcTaskPhoneDao.deleteAll(user);
+        //hcTaskPhoneDao.deleteAll(user);
 
         FileUtils.deleteDirectory(TxtUtils.getTxtPathByUserId(user.getId()));
     }
+
+    /**
+     * 定时器 5分钟统计一次
+     *
+     *
+     * 统计更新任务（发送数，状态）
+     */
+    @Transactional(readOnly = false)
+    public void updateTaskGroup() {
+        logger.debug("--------------------------- 统计任务开始："+ new Date());
+        //统计发送日志 -> 更新子任务
+        hcTaskChildDao.updateNumberGroupByChildId();
+
+        /**
+         * 子任务处理后   =>
+         *
+         * 统计子任务发送情况->更新主任务
+         */
+        dao.updateNumberGroupByTaskId();
+    }
+
+
+
 }

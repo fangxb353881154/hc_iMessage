@@ -19,7 +19,6 @@ public class HcTaskChild extends DataEntity<HcTaskChild> {
 	private static final long serialVersionUID = 1L;
 	private String taskId;		// 父任务id
 	private String count;		// 号码数
-	private User user;		// 后台用户id
 	private String taskStatus;		// 子任务状态 [0-未完成 1-已完成 2-处理中]
 	private String successNumber;		// success_number
 	
@@ -47,15 +46,6 @@ public class HcTaskChild extends DataEntity<HcTaskChild> {
 
 	public void setCount(String count) {
 		this.count = count;
-	}
-	
-	@NotNull(message="后台用户id不能为空")
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 	
 	@Length(min=1, max=1, message="子任务状态 [0-未完成 1-已完成 2-处理中]长度必须介于 1 和 1 之间")

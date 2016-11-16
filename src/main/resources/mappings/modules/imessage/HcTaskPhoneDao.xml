@@ -7,12 +7,9 @@
 		a.task_id AS "taskId",
 		a.phone AS "phone",
 		a.task_status AS "taskStatus",
-		a.update_by AS "updateBy.id",
 		a.create_by AS "createBy.id",
 		a.task_child_id AS "taskChildId",
-		a.update_date AS "updateDate",
-		a.create_date AS "createDate",
-		a.del_flag AS "delFlag"
+		a.create_date AS "createDate"
 	</sql>
 	
 	<sql id="hcTaskPhoneJoins">
@@ -45,7 +42,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY a.create_date DESC
 			</otherwise>
 		</choose>
 	</select>
@@ -74,23 +71,17 @@
 			task_id,
 			phone,
 			task_status,
-			update_by,
 			create_by,
 			task_child_id,
-			update_date,
-			create_date,
-			del_flag
+			create_date
 		) VALUES (
 			#{id},
 			#{taskId},
 			#{phone},
-			'0',
-			#{updateBy.id},
+			#{taskStatus},
 			#{createBy.id},
 			#{taskChildId},
-			#{updateDate},
-			#{createDate},
-			#{delFlag}
+			#{createDate}
 		)
 	</insert>
 	
@@ -98,10 +89,8 @@
 		UPDATE hc_task_phone SET 	
 			task_id = #{taskId},
 			phone = #{phone},
-			task_status = #{taskStatus},
-			update_by = #{updateBy.id},
-			task_child_id = #{taskChildId},
-			update_date = #{updateDate}
+			task_status = #{taskStatus}
+			task_child_id = #{taskChildId}
 		WHERE id = #{id}
 	</update>
 
@@ -113,9 +102,7 @@
 	</select>
 
 	<update id="delete">
-		UPDATE hc_task_phone SET 
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		DELETE FROM hc_task_phone WHERE id = #{id}
 	</update>
 
 	<update id="deleteByTaskId">
@@ -123,6 +110,6 @@
 	</update>
 
 	<update id="deleteAll">
-		DELETE  FROM hc_task_phone WHERE create_by = #{id}
+		DELETE FROM hc_task_phone WHERE create_by = #{id}
 	</update>
 </mapper>

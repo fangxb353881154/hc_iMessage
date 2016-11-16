@@ -15,7 +15,7 @@ public class TaskVo {
     private String taskType;    //任务类型  随机号码的任务表其实在另一张
     private String status;      //结果 1-成功  0-失败
     private String successnum;  //成功数量
-    private String phoneStr;
+    private String mobile;
 
 
     public String getSN() {
@@ -52,6 +52,14 @@ public class TaskVo {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public void setStatus(String status) {

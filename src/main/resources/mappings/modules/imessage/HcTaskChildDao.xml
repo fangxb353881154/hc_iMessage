@@ -8,7 +8,6 @@
 		a.count AS "count",
 		a.update_by AS "updateBy.id",
 		a.create_by AS "createBy.id",
-		a.user_id AS "user.id",
 		a.task_status AS "taskStatus",
 		a.success_number AS "successNumber",
 		a.update_date AS "updateDate",
@@ -18,7 +17,7 @@
 	</sql>
 	
 	<sql id="hcTaskChildJoins">
-		LEFT JOIN sys_user u6 ON u6.id = a.user_id
+		LEFT JOIN sys_user u6 ON u6.id = a.create_by
 	</sql>
     
 	<select id="get" resultType="HcTaskChild">
@@ -125,13 +124,12 @@
 			a.count AS "count",
 			a.update_by AS "updateBy.id",
 			a.create_by AS "createBy.id",
-			a.user_id AS "user.id",
 			a.task_status AS "taskStatus",
 			a.success_number AS "successNumber",
 			a.update_date AS "updateDate",
 			a.create_date AS "createDate",
 			a.del_flag AS "delFlag"
-		FROM hc_task t JOIN hc_task_child a on a.task_id = t.id and a.task_status = '0'
+		FROM hc_task t JOIN hc_task_child a on a.task_id = t.id and a.task_status IN ('0','4')
 		WHERE
 			t.del_flag = '0' AND (t.task_status = '0' OR (t.task_status = '2' AND t.type != '1')) AND t.create_by = #{id}
 		LIMIT 1;
@@ -140,4 +138,38 @@
 	<update id="deleteAll">
 		DELETE  FROM hc_task_child WHERE create_by = #{id}
 	</update>
+
+	<!-- 统计发送记录 更新子任务-->
+	<update id="updateNumberGroupByChildId">
+		update hc_task_child cc ,(
+			SELECT p.task_child_id,
+				sum(case when p.task_status='1' then 1 else 0 end) as success_tatus ,
+				sum(case when p.task_status='0' then 1 else 0 end) as failure_tatus,
+				count(1) as count
+			FROM hc_task_child c JOIN hc_task_phone p on c.task_status = '2' and c.id = p.task_child_id GROUP BY p.task_child_id
+		) as aa
+		set cc.send_number = aa.count ,
+		cc.success_number = aa.success_tatus,
+		cc.task_status = (CASE WHEN cc.count = aa.count then '1' else cc.task_status end)
+		where cc.id = aa.task_child_id
+	</update>
+
+	<!-- 获取需要回收的子任务 -->
+	<select id="getRecycleTaskChild" resultType="HcTaskChild">
+		<![CDATA[
+ 			SELECT
+ 			 	a.id AS "id",
+				a.task_id AS "taskId",
+				a.count AS "count",
+				a.update_by AS "updateBy.id",
+				a.create_by AS "createBy.id",
+				a.task_status AS "taskStatus",
+				a.success_number AS "successNumber",
+				a.update_date AS "updateDate",
+				a.create_date AS "createDate",
+				a.del_flag AS "delFlag"
+ 			 FROM hc_task_child a
+ 			 WHERE a.task_status = '2' AND a.count > a.send_number AND a.update_date < date_sub(now(), interval 1 hour)
+ 		 ]]>
+	</select>
 </mapper>

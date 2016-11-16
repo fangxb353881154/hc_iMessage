@@ -4,6 +4,7 @@ import com.alibaba.druid.support.json.JSONUtils;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.utils.Collections3;
 import com.thinkgem.jeesite.common.utils.DesUtils;
+import com.thinkgem.jeesite.common.utils.ResultUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.imessage.TxtUtils;
 import com.thinkgem.jeesite.modules.imessage.entity.*;
@@ -168,6 +169,23 @@ public class InterfaceApiController {
             result.put("flag", "0");
             result.put("msg", "任务状态更新失败, "+e.getMessage());
             return result;
+        }
+    }
+
+
+    /**
+     * 号码发送是否成功
+     * @param taskPhone
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/phone/mobileResult")
+    public Map<String, Object> mobileResult(HcTaskPhone taskPhone) {
+        try {
+            hcTaskPhoneService.save(taskPhone);
+            return ResultUtils.getSuccess();
+        } catch (Exception e) {
+            return ResultUtils.getFailure("更新失败，mobile=" + taskPhone.getPhone() + "  " + e.getMessage());
         }
     }
 

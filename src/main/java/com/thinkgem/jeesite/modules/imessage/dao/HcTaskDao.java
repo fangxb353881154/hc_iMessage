@@ -27,4 +27,10 @@ public interface HcTaskDao extends CrudDao<HcTask> {
 
     void deleteAll(User user);
 
+
+    /**
+     * 统计更新任务
+     */
+    void updateNumberGroupByTaskId();
+
 }

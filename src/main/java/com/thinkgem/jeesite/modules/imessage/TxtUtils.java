@@ -34,8 +34,9 @@ public class TxtUtils {
     public static Logger logger = LoggerFactory.getLogger(TxtUtils.class);
 
     public static String getRequestPath(String path) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        path = request.getSession().getServletContext().getRealPath("") + path;
+        path = Global.getConfig("task.txt.path") + path;
+      /*  HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        path = request.getSession().getServletContext().getRealPath("") + path;*/
         File file = new File(path);
         if (!file.exists() && !file.isDirectory()) {
             System.out.println("TxtUtils.getRequestPath " + path + "目录不存在，需要创建");

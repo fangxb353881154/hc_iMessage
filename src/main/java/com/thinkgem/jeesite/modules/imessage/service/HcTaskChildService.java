@@ -62,4 +62,9 @@ public class HcTaskChildService extends CrudService<HcTaskChildDao, HcTaskChild>
 	public HcTaskChild getTaskByInterface(User user) {
 		return dao.getTaskByInterface(user);
 	}
+
+	public List<HcTaskChild> getRecycleTaskChild() {
+		return dao.getRecycleTaskChild();
+	}
 }
+
