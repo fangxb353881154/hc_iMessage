@@ -12,6 +12,7 @@
 		a.create_by AS "createBy.id",
 		a.update_by AS "updateBy.id",
 		a.task_status AS "taskStatus",
+		a.send_number AS "sendNumber",
 		a.success_number AS "successNumber",
 		a.create_date AS "createDate",
 		a.update_date AS "updateDate",
@@ -97,7 +98,8 @@
 			update_date,
 			del_flag,
 			area_id,
-			task_status
+			task_status,
+			send_number
 		) VALUES (
 			#{id},
 			#{title},
@@ -110,7 +112,8 @@
 			#{updateDate},
 			#{delFlag},
 			#{area.id},
-			'9'
+			'9',
+			'0'
 		)
 	</insert>
 	
@@ -176,7 +179,8 @@
 				c.task_id
 		) aa
 		SET tt.success_number = aa.success_number,
-		tt.task_status = (CASE WHEN tt.count = aa.send_number THEN '1' ELSE tt.task_status END)
+		tt.task_status = (CASE WHEN tt.count = aa.send_number THEN '1' ELSE tt.task_status END),
+		tt.send_number = aa.send_number
 		WHERE
 			tt.id = aa.task_id
 	</update>

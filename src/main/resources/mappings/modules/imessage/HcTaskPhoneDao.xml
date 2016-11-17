@@ -36,6 +36,9 @@
 			<if test="taskChildId != null and taskChildId != ''">
 				AND a.task_child_id = #{taskChildId}
 			</if>
+			<if test="taskStatus != null and taskStatus != ''">
+				AND a.task_status = #{taskStatus}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

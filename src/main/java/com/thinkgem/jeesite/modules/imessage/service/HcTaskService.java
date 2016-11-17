@@ -131,7 +131,6 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
                     taskPhone.setPhoneList(list);
                     logger.info("-----------------开始写入文件--------------");
                     TxtUtils.writeTxt(taskPhone);//任务号码写入txt文件
-
                     logger.info("-----------------开始写入文件 end --------------");
                 }
             }else {

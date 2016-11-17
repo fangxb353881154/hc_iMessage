@@ -25,6 +25,7 @@ public class HcTask extends DataEntity<HcTask> {
 	private String count;		// 手机号数量
 	private String content;		// 短信内容
 	private String taskStatus;		// 任务状态[0-未完成 1-已完成 2-进行中]
+	private Integer sendNumber;
 	private String successNumber;		// 成功发送的个数
 	private Area area;
 
@@ -85,7 +86,15 @@ public class HcTask extends DataEntity<HcTask> {
 	public void setTaskStatus(String taskStatus) {
 		this.taskStatus = taskStatus;
 	}
-	
+
+	public Integer getSendNumber() {
+		return sendNumber;
+	}
+
+	public void setSendNumber(Integer sendNumber) {
+		this.sendNumber = sendNumber;
+	}
+
 	@Length(min=0, max=8, message="成功发送的个数长度必须介于 0 和 8 之间")
 	public String getSuccessNumber() {
 		return successNumber;

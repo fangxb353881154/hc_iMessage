@@ -19,7 +19,9 @@
 <body>
 <ul class="nav nav-tabs">
     <li class="active"><a href="${ctx}/imessage/task/">发送任务列表</a></li>
-    <shiro:hasPermission name="imessage:task:edit"><li><a href="${ctx}/imessage/task/form">发送任务添加</a></li></shiro:hasPermission>
+    <shiro:hasPermission name="imessage:task:edit">
+        <li><a href="${ctx}/imessage/task/form">发送任务添加</a></li>
+    </shiro:hasPermission>
 </ul>
 <form:form id="searchForm" modelAttribute="hcTask" action="${ctx}/imessage/task/" method="post"
            class="breadcrumb form-search">
@@ -45,7 +47,8 @@
         </li>
         <li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="button" class="btn btn-warning" value="一键清空任务" id="btnDeleteAll" onclick="return confirmx('确认要清空所有任务吗？', '${ctx}/imessage/task/deleteAll');"/>
+            <input type="button" class="btn btn-warning" value="一键清空任务" id="btnDeleteAll"
+                   onclick="return confirmx('确认要清空所有任务吗？', '${ctx}/imessage/task/deleteAll');"/>
         </li>
         <li class="clearfix"></li>
     </ul>
@@ -59,7 +62,8 @@
         <th>手机号数量</th>
         <th>短信内容</th>
         <th>任务状态</th>
-        <th>成功发送的个数</th>
+        <th>已发送(条)</th>
+        <th>成功发送(条)</th>
         <th>地区</th>
         <th>创建人</th>
         <th>创建时间</th>
@@ -86,10 +90,13 @@
                     ${fns:getDictLabel(hcTask.taskStatus, 'task_state', '')}
             </td>
             <td>
+                    ${hcTask.sendNumber}
+            </td>
+            <td>
                     ${hcTask.successNumber}
             </td>
             <td>
-                ${hcTask.area.name}
+                    ${hcTask.area.name}
             </td>
             <td>
                     ${hcTask.createBy.name}
@@ -102,15 +109,16 @@
             </td>
             <td>
                 <shiro:hasPermission name="imessage:task:edit">
-                <c:if test="${hcTask.taskStatus == '9' or hcTask.taskStatus == '1' }">
-                    <a href="${ctx}/imessage/task/updateStatus?id=${hcTask.id}&taskStatus=0" onclick="return confirmx('确认要开启该发送任务吗？', this.href)">开启</a>
-                    <a href="${ctx}/imessage/task/form?id=${hcTask.id}">修改</a>
-                    <a href="${ctx}/imessage/task/delete?id=${hcTask.id}" onclick="return confirmx('确认要删除该发送任务吗？', this.href)">删除</a>
-
-                </c:if>
-                <c:if test="${hcTask.taskStatus != '9' and hcTask.taskStatus != '1'}">
-                    <a href="${ctx}/imessage/task/updateStatus?id=${hcTask.id}&taskStatus=1" onclick="return confirmx('确认要完成此发送任务吗？', this.href)">结束</a>
-                </c:if>
+                    <c:if test="${hcTask.taskStatus == '9' or hcTask.taskStatus == '1' }">
+                        <a href="${ctx}/imessage/task/updateStatus?id=${hcTask.id}&taskStatus=0" onclick="return confirmx('确认要开启该发送任务吗？', this.href)">开启</a>
+                        <a href="${ctx}/imessage/task/form?id=${hcTask.id}">修改</a>
+                        <a href="${ctx}/imessage/task/delete?id=${hcTask.id}" onclick="return confirmx('确认要删除该发送任务吗？', this.href)">删除</a>
+                        <a href="${ctx}/imessage/task/exportPhone?taskId=${hcTask.id}" onclick="return confirmx('导出该任务发送成功号码？', this.href)">导出</a>
+                    </c:if>
+                    <c:if test="${hcTask.taskStatus != '9' and hcTask.taskStatus != '1'}">
+                        <a href="${ctx}/imessage/task/updateStatus?id=${hcTask.id}&taskStatus=1"
+                           onclick="return confirmx('确认要完成此发送任务吗？', this.href)">结束</a>
+                    </c:if>
                 </shiro:hasPermission>
             </td>
         </tr>
