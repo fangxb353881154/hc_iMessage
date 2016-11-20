@@ -162,10 +162,10 @@
 	</select>
 
 	<update id="deleteAll">
-		DELETE FROM hc_apple WHERE create_by = #{id}
+		DELETE FROM hc_apple WHERE create_by =#{createBy.id}
 	</update>
 
 	<update id="updateAllIsUse">
-		UPDATE hc_apple SET is_use='0' WHERE create_by = ${id}
+		UPDATE hc_apple SET is_use='0' WHERE create_by =#{createBy.id}
 	</update>
 </mapper>

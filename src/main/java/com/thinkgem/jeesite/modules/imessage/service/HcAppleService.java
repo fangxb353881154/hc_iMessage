@@ -64,11 +64,13 @@ public class HcAppleService extends CrudService<HcAppleDao, HcApple> {
 
 	@Transactional(readOnly = false)
 	public void deleteAll() {
-		dao.deleteAll(UserUtils.getUser());
+		HcApple apple = new HcApple();
+		apple.setCreateBy(UserUtils.getUser());
+		dao.deleteAll(apple);
 	}
 
 	@Transactional(readOnly = false)
-	public void updateAllIsUse(User user){
-		dao.updateAllIsUse(user);
+	public void updateAllIsUse(HcApple apple){
+		dao.updateAllIsUse(apple);
 	}
 }

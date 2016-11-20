@@ -6,6 +6,8 @@ import com.thinkgem.jeesite.common.utils.Collections3;
 import com.thinkgem.jeesite.common.utils.DesUtils;
 import com.thinkgem.jeesite.common.utils.ResultUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.imessage.AppleIdUtils;
 import com.thinkgem.jeesite.modules.imessage.TxtUtils;
 import com.thinkgem.jeesite.modules.imessage.entity.*;
 import com.thinkgem.jeesite.modules.imessage.service.HcAppleService;
@@ -29,7 +31,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "${adminPath}/imessage/api")
-public class InterfaceApiController {
+public class InterfaceApiController extends BaseController{
 
     @Autowired
     private HcAppleService hcAppleService;
@@ -51,34 +53,24 @@ public class InterfaceApiController {
     @RequestMapping(value = "/apple/getAppleAccount")
     public Map<String, Object> getAppleAccount(String SN,String userId) {
         Map<String, Object> map = Maps.newHashMap();
-        HcApple apple = new HcApple();
-        apple.setIsUse("0");
         User user = UserUtils.getInUser(userId);
         if (user == null) {
             map.put("flag", "0");
             map.put("msg", "用户ID错误，请联系管理员！");
             return map;
         }
-        apple.setCreateBy(user);
-        List<HcApple> appleList = hcAppleService.findList(apple);
-
-        if (appleList == null || appleList.size() == 0) {
-            //批量还原ID 使用状态
-            hcAppleService.updateAllIsUse(user);
-            appleList = hcAppleService.findList(apple);
-        }
-
+        HcApple apple = AppleIdUtils.getApple(user);
         try {
-            if (appleList != null && appleList.size() > 0) {
+            if (apple != null ) {
                 DesUtils des = new DesUtils();
-                apple = appleList.get(0);
-                apple.setIsUse("1");
-                hcAppleService.save(apple);
+                //apple.setIsUse("1");
+                //hcAppleService.save(apple);
                 map.put("appleID", apple.getAppleId());
                 map.put("applePwd", des.decryptString(apple.getApplePwd()));
                 map.put("flag", "1");
                 return map;
             } else {
+                logger.warn("--------------获取账号密码失败");
                 throw new RuntimeException("获取账号密码失败");
             }
         } catch (Exception e) {
@@ -186,6 +178,27 @@ public class InterfaceApiController {
             return ResultUtils.getSuccess();
         } catch (Exception e) {
             return ResultUtils.getFailure("更新失败，mobile=" + taskPhone.getPhone() + "  " + e.getMessage());
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/phone/appleIdResult")
+    public Map<String, Object> appleIdResult(String appleId, String userId) {
+        try {
+            HcApple apple = new HcApple();
+            apple.setCreateBy(new User(userId));
+            apple.setAppleId(appleId);
+            List<HcApple> appleList = hcAppleService.findList(apple);
+            if (appleList != null && appleList.size() > 0) {
+                apple = appleList.get(0);
+                AppleIdUtils.setApple(apple);
+                return ResultUtils.getSuccess();
+            }else{
+                return ResultUtils.getFailure("AppleId存储失败");
+            }
+        } catch (Exception e) {
+            logger.warn("AppleId存储失败," + e.getMessage());
+            return ResultUtils.getFailure("AppleId存储失败" );
         }
     }
 

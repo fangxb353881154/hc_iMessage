@@ -149,7 +149,10 @@ public class HcAppleController extends BaseController {
 
 	@RequestMapping(value = "updateAllIsUse")
 	public String updateAllIsUse(RedirectAttributes redirectAttributes) {
-		hcAppleService.updateAllIsUse(UserUtils.getUser());
+		HcApple apple = new HcApple();
+		apple.setCreateBy(UserUtils.getUser());
+
+		hcAppleService.updateAllIsUse(apple);
 		addMessage(redirectAttributes, "还原appleId状态成功");
 		return "redirect:" + Global.getAdminPath() + "/imessage/appleId/list?repage";
 	}
