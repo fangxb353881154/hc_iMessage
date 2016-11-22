@@ -25,38 +25,37 @@ public class AppleIdUtils {
     private static HcAppleDao hcAppleDao = SpringContextHolder.getBean(HcAppleDao.class);
     public static String APPLE_KEY_ = "APPLE_KEY_";
 
+    public static Logger logger = LoggerFactory.getLogger(AppleIdUtils.class);
+
     public static void setApple(HcApple apple) {
-        Map<String, AppleVo> map = (Map) CacheUtils.get(APPLE_KEY_);
+        Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
         if (map == null) {
             map = Maps.newHashMap();
         }
-        AppleVo vo = map.get(apple.getId());
+        AppleVo vo = (AppleVo) map.get(apple.getId());
         if (vo == null) {
             //不存在初始化
             vo = new AppleVo();
             vo.setNumber(1);
             vo.setApple(apple);
-        }else{
-            //存在更新使用次数
-            vo.setNumber(vo.getNumber()+1);
+            map.put(apple.getId(), vo);
+            //加入缓存
+            CacheUtils.put(APPLE_KEY_, map);
         }
-        map.put(apple.getId(), vo);
 
-        //刷新缓存
-        CacheUtils.put(APPLE_KEY_, map);
     }
 
     public static HcApple getApple(User user) {
-        Map<String, AppleVo> map = (Map<String, AppleVo>) CacheUtils.get(APPLE_KEY_);
+        Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
         HcApple resultApple = null;
-        if (map != null) {
+        /*if (map != null) {
             Iterator it = map.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
                 String key = (String) entry.getKey();
                 AppleVo value = (AppleVo) entry.getValue();
 
-                System.out.println("-----getApple       key:" + key + "      appleId" + value.getApple().getAppleId());
+                logger.debug("-----getApple       key:" + key + "      appleId" + value.getApple().getAppleId());
 
                 if (value != null && StringUtils.equals(value.getApple().getCreateBy().getId(), user.getId())) {
                     value.setNumber(value.getNumber() + 1);
@@ -65,11 +64,11 @@ public class AppleIdUtils {
                     }else {
                         map.put(key, value);
                     }
-                    System.out.println("           password:" + value.getApple().getApplePwd() + "          num:" + value.getNumber());
+                    logger.debug("           password:" + value.getApple().getApplePwd() + "          num:" + value.getNumber());
                     resultApple = value.getApple();
                 }
             }
-        }
+        }*/
         if (resultApple == null){
             HcApple apple = new HcApple();
             apple.setIsUse("0");

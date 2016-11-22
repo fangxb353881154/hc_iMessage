@@ -43,7 +43,7 @@ public class HcTaskScheduled {
      *
      * 统计更新任务（发送数，状态）
      */
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void updateTaskGroup() {
         hcTaskService.updateTaskGroup();
     }
@@ -58,6 +58,7 @@ public class HcTaskScheduled {
     public void recycleTaskChild() {
         List<HcTaskChild> taskChildList = hcTaskChildService.getRecycleTaskChild();
         if (taskChildList != null && taskChildList.size() > 0) {
+            logger.info("---------------------------------任务回收------------------ " + taskChildList.size());
             for (HcTaskChild taskChild : taskChildList) {
                 new RecycleTaskChild(taskChild).start();
             }
@@ -71,7 +72,6 @@ public class HcTaskScheduled {
             this.taskChild = taskChild;
         }
         public void run(){
-            logger.debug("--------------------------- 线程任务：" + new Date() + "  taskId: " + taskChild.getTaskId() + "   taskChildId: " + taskChild.getId());
             HcTaskPhone phone = new HcTaskPhone();
             phone.setTaskId(taskChild.getTaskId());
             phone.setTaskChildId(taskChild.getId());

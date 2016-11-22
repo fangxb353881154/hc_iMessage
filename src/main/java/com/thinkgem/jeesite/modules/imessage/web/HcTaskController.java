@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.utils.Collections3;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.DesUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
+import com.thinkgem.jeesite.modules.imessage.EmojiUtils;
 import com.thinkgem.jeesite.modules.imessage.TxtUtils;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskChild;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskPhone;
@@ -81,6 +83,17 @@ public class HcTaskController extends BaseController {
             hcTask.setCreateBy(user);
         }
         Page<HcTask> page = hcTaskService.findPage(new Page<HcTask>(request, response), hcTask);
+        if (page != null && page.getList() != null) {
+            DesUtils desUtils = new DesUtils();
+            for (HcTask task : page.getList()) {
+                try {
+                    String content = desUtils.decryptString(task.getContent());
+
+                    task.setContent(EmojiUtils.emojiRecovery(content));
+                } catch (Exception e) {
+                }
+            }
+        }
         model.addAttribute("page", page);
         return "modules/imessage/taskList";
     }
@@ -100,6 +113,12 @@ public class HcTaskController extends BaseController {
                     model.addAttribute("phones", StringUtils.join(phoneList, ","));
                 }
             }
+            try {
+                DesUtils desUtils = new DesUtils();
+                String content = desUtils.decryptString(hcTask.getContent());
+                hcTask.setContent(EmojiUtils.emojiRecovery(content));
+            } catch (Exception e) {
+            }
         }
         model.addAttribute("hcTask", hcTask);
         return "modules/imessage/taskForm";
@@ -108,9 +127,8 @@ public class HcTaskController extends BaseController {
     @RequiresPermissions("imessage:task:edit")
     @RequestMapping(value = "save")
     public String save(HcTask hcTask, Model model, RedirectAttributes redirectAttributes, MultipartFile file) {
-        logger.info("-----------------------------进来了！！");
         if (StringUtils.equals(hcTask.getType(), "2")) {
-            //任务类型=3  指定号码 计算号码数 TODO
+            //任务类型=3  指定号码 计算号码数
             String fileName = file.getOriginalFilename();
             String fileSuffix = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
             List<String> phoneList = Lists.newArrayList();

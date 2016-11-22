@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.common.utils;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.modules.imessage.EmojiUtils;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
@@ -83,8 +84,14 @@ public class DesUtils {
 
     // 提供main函数，方便转换加密字符
     public static void main(String[] args) {
-		DesUtils utils= new DesUtils();
-		System.out.println(utils.encryptString("123123123123123"));
-//		System.out.println(utils.decryptString("z150xXvVC/rAWcN0w8HsEoMv20eOsZNABi3g9ciH6cY7zyX3lvikh96sck0dR8Gx3R96QMo+fW8udZmP7kLt81iq51Qmw9q/Fr2YJjhZQexjsjfW8BYSHWVsMb/OGCA9vrY2gbRVK5MnlVx1vo/1GKIMSbr3ZpOajuo5ZQNXXwwIBj86/YpymoHeh4s8sbTy/rsvxOntJF46FzeW76xwKC2g3aid1UutbySAp1GLgHxxmUdf7EubSXvhbDXOa8zTDxANkQw+gOWr3VXlHJ8rdWnMOUUav9ogqdWvrJgIss/19B4sChCWcmViUOttQUjDt+1dQPOSSvPpjYA52SrGkyLp8U6FDX2A7ZVxb6mnPH1xQcq1FHIHyMIvJhKex5PRFpynWMxnPI48yQTh49NpkbCpe+VVY/qBfKJmpiTe0mQzAoJb028AjyXjHiB4sN68grNVKACuCM0VoT0Jmu/XiA=="));
+        DesUtils des = new DesUtils();
+
+        String s = "车上[[%F0%9F%8C%B9]]很阿豪3d[[%F0%9F%90%AF]]不是[[%F0%9F%90%85]]";
+        String ss = des.encryptString(s);
+        System.out.println(ss);
+
+        System.out.println(des.decryptString(ss));
+
+        System.out.println(EmojiUtils.emojiRecovery(des.decryptString(ss)));
     }
 }

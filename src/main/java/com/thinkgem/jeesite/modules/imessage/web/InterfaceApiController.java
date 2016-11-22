@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.common.utils.ResultUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.imessage.AppleIdUtils;
+import com.thinkgem.jeesite.modules.imessage.EmojiUtils;
 import com.thinkgem.jeesite.modules.imessage.TxtUtils;
 import com.thinkgem.jeesite.modules.imessage.entity.*;
 import com.thinkgem.jeesite.modules.imessage.service.HcAppleService;
@@ -96,6 +97,12 @@ public class InterfaceApiController extends BaseController{
         try {
             if (taskChild != null) {
                 task = hcTaskService.get(taskChild.getTaskId());
+                try {
+                    DesUtils desUtils = new DesUtils();
+                    String content = desUtils.decryptString(task.getContent());
+                    task.setContent(EmojiUtils.emojiRecovery(content));
+                }catch (Exception e ){
+                }
                 String taskId = task.getId();
                 result.put("flag", 1);
                 result.put("taskID", taskId);

@@ -7,10 +7,8 @@ import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.Collections3;
-import com.thinkgem.jeesite.common.utils.FileUtils;
-import com.thinkgem.jeesite.common.utils.ListUtils;
-import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.utils.*;
+import com.thinkgem.jeesite.modules.imessage.EmojiUtils;
 import com.thinkgem.jeesite.modules.imessage.TxtUtils;
 import com.thinkgem.jeesite.modules.imessage.dao.HcRandPhoneDao;
 import com.thinkgem.jeesite.modules.imessage.dao.HcTaskChildDao;
@@ -82,6 +80,9 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
             FileUtils.deleteFile(FileUtils.getFilesByPathPrefix(new File(path), hcTask.getId()));
         }
 
+        String content = EmojiUtils.emojiConvert(hcTask.getContent());
+        DesUtils desUtils = new DesUtils();
+        hcTask.setContent(desUtils.encryptString(content));
         //保存主任务
         super.save(hcTask);
 
