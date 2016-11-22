@@ -54,49 +54,13 @@ public class HcTaskScheduled {
      * 判断子任务 处于'处理中'状态长达1个小时
      */
     @Scheduled(cron = "0 0/20 * * * ?")
-    @Transactional(readOnly = false)
     public void recycleTaskChild() {
+        logger.info("-------------------------------定时回收任务------------------ ");
         List<HcTaskChild> taskChildList = hcTaskChildService.getRecycleTaskChild();
         if (taskChildList != null && taskChildList.size() > 0) {
-            logger.info("---------------------------------任务回收------------------ " + taskChildList.size());
-            for (HcTaskChild taskChild : taskChildList) {
-                new RecycleTaskChild(taskChild).start();
-            }
+            hcTaskChildService.recycleTaskChild(taskChildList);
         }
+        logger.info("-------------------------------结束------------------------- ");
     }
 
-    public class RecycleTaskChild extends Thread{
-        private HcTaskChild taskChild;
-
-        public RecycleTaskChild(HcTaskChild taskChild) {
-            this.taskChild = taskChild;
-        }
-        public void run(){
-            HcTaskPhone phone = new HcTaskPhone();
-            phone.setTaskId(taskChild.getTaskId());
-            phone.setTaskChildId(taskChild.getId());
-            phone.setCreateDate(taskChild.getCreateDate());
-            phone.setCreateBy(taskChild.getCreateBy());
-
-            List<HcTaskPhone> phoneList = hcTaskPhoneService.findList(phone);
-            if (phoneList != null && phoneList.size() > 0 ) {
-                //指定号码+随机号码 -> 读取txt文件
-                List<String> txtPhoneList = TxtUtils.readTxt(phone);
-                if (txtPhoneList != null && txtPhoneList.size() > 0 && phoneList.size() != txtPhoneList.size()) {
-                    for (HcTaskPhone taskPhone : phoneList) {
-                        for (int i = 0; i < txtPhoneList.size(); i++) {
-                            if (StringUtils.equals(txtPhoneList.get(i), taskPhone.getPhone())) {
-                                txtPhoneList.remove(i);
-                                i--;
-                            }
-                        }
-                    }
-                    phone.setPhoneList(txtPhoneList);
-                    TxtUtils.writeTxt(phone);//将剩余未发送号码回填txt
-                }
-                taskChild.setTaskStatus("4");//已收回
-                hcTaskChildService.save(taskChild);
-            }
-        }
-    }
 }

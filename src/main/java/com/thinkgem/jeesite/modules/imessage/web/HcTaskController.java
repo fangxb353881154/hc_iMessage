@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.modules.imessage.entity.HcTaskChild;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskPhone;
 import com.thinkgem.jeesite.modules.imessage.service.HcTaskChildService;
 import com.thinkgem.jeesite.modules.imessage.service.HcTaskPhoneService;
+import com.thinkgem.jeesite.modules.imessage.task.HcTaskScheduled;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -196,16 +197,15 @@ public class HcTaskController extends BaseController {
 
 
     @RequiresPermissions("imessage:task:edit")
-    @RequestMapping(value="exportPhone")
+    @RequestMapping(value = "exportPhone")
     public String exportSuccessPhone(HcTaskPhone taskPhone, HttpServletResponse response, RedirectAttributes redirectAttributes) {
-
         if (StringUtils.isNotEmpty(taskPhone.getTaskId())) {
             taskPhone.setTaskStatus("1");
             List<HcTaskPhone> phoneList = hcTaskPhoneService.findList(taskPhone);
             if (phoneList != null & phoneList.size() > 0) {
                 //导出txt文件
                 response.setContentType("text/plain");
-                String fileName = "成功手机号码" + DateUtils.getDate("yyyyMMddHHmmss")+"_"+phoneList.size()+"条";
+                String fileName = "成功手机号码" + DateUtils.getDate("yyyyMMddHHmmss") + "_" + phoneList.size() + "条";
                 try {
                     fileName = URLEncoder.encode(fileName, "UTF-8");
                 } catch (UnsupportedEncodingException e1) {
@@ -227,7 +227,7 @@ public class HcTaskController extends BaseController {
                     buff.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }finally {
+                } finally {
                     try {
                         buff.close();
                         outSTr.close();
@@ -235,13 +235,34 @@ public class HcTaskController extends BaseController {
                         e.printStackTrace();
                     }
                 }
-            }else{
+            } else {
                 addMessage(redirectAttributes, "导出手机号号码失败,失败原因：无成功号码数据！");
             }
-        }else{
+        } else {
             addMessage(redirectAttributes, "导出手机号号码失败,请选择发送任务！");
         }
 
         return "redirect:" + Global.getAdminPath() + "/imessage/task/list?repage";
+    }
+
+
+    @RequiresPermissions("imessage:task:edit")
+    @RequestMapping(value = "recycleChild")
+    public String recycleTaskChild(HcTask hcTask,RedirectAttributes redirectAttributes) {
+        if (StringUtils.equals(hcTask.getTaskStatus(), "2")) {
+            HcTaskChild hcTaskChild = new HcTaskChild();
+            hcTaskChild.setTaskId(hcTask.getId());
+            hcTaskChild.setTaskStatus("2");
+            List<HcTaskChild> taskChildList = hcTaskChildService.findList(hcTaskChild);
+            if (taskChildList != null && taskChildList.size() > 0) {
+                hcTaskChildService.recycleTaskChild(taskChildList);
+                addMessage(redirectAttributes, "任务回收成功，请静候几分钟！");
+            }else{
+                addMessage(redirectAttributes, "任务回收失败，失败原因：暂无需要回收的任务！");
+            }
+        }else{
+            addMessage(redirectAttributes, "任务回收失败，失败原因：任务状态非处理中！");
+        }
+        return "redirect:" + Global.getAdminPath() + "/imessage/task/?repage";
     }
 }

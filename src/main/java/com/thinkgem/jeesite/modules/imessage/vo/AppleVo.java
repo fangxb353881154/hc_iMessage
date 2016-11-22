@@ -9,6 +9,10 @@ public class AppleVo {
     public HcApple apple;
     public Integer number;
 
+    public AppleVo() {
+
+    }
+
     public HcApple getApple() {
         return apple;
     }

@@ -118,6 +118,8 @@
                     <c:if test="${hcTask.taskStatus != '9' and hcTask.taskStatus != '1'}">
                         <a href="${ctx}/imessage/task/updateStatus?id=${hcTask.id}&taskStatus=1"
                            onclick="return confirmx('确认要完成此发送任务吗？', this.href)">结束</a>
+                        <a href="${ctx}/imessage/task/recycleChild?id=${hcTask.id}"
+                               onclick="return confirmx('确认要回收该任务下未完成的子任务吗？', this.href)">回收任务</a>
                     </c:if>
                 </shiro:hasPermission>
             </td>

@@ -28,27 +28,30 @@ public class AppleIdUtils {
     public static Logger logger = LoggerFactory.getLogger(AppleIdUtils.class);
 
     public static void setApple(HcApple apple) {
-        Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
-        if (map == null) {
-            map = Maps.newHashMap();
+        try {
+            Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
+            if (map == null) {
+                map = Maps.newHashMap();
+            }
+            AppleVo vo = (AppleVo) map.get(apple.getId());
+            if (vo == null) {
+                //不存在初始化
+                vo = new AppleVo();
+                vo.setNumber(1);
+                vo.setApple(apple);
+                map.put(apple.getId(), vo);
+                //加入缓存
+                CacheUtils.put(APPLE_KEY_, map);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        AppleVo vo = (AppleVo) map.get(apple.getId());
-        if (vo == null) {
-            //不存在初始化
-            vo = new AppleVo();
-            vo.setNumber(1);
-            vo.setApple(apple);
-            map.put(apple.getId(), vo);
-            //加入缓存
-            CacheUtils.put(APPLE_KEY_, map);
-        }
-
     }
 
     public static HcApple getApple(User user) {
         Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
         HcApple resultApple = null;
-        /*if (map != null) {
+        if (map != null) {
             Iterator it = map.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
@@ -59,7 +62,7 @@ public class AppleIdUtils {
 
                 if (value != null && StringUtils.equals(value.getApple().getCreateBy().getId(), user.getId())) {
                     value.setNumber(value.getNumber() + 1);
-                    if (value.getNumber() >= 5) {
+                    if (value.getNumber() >= 2) {
                         map.remove(key);
                     }else {
                         map.put(key, value);
@@ -68,7 +71,7 @@ public class AppleIdUtils {
                     resultApple = value.getApple();
                 }
             }
-        }*/
+        }
         if (resultApple == null){
             HcApple apple = new HcApple();
             apple.setIsUse("0");
