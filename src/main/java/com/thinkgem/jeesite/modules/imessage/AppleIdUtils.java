@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.imessage;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -49,9 +50,10 @@ public class AppleIdUtils {
     }
 
     public static HcApple getApple(User user) {
-        Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
+        //Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
         HcApple resultApple = null;
-        if (map != null) {
+        //int useNumber = Integer.parseInt(Global.getConfig("appleId.use.number"));
+        /*if (map != null) {
             Iterator it = map.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry entry = (Map.Entry) it.next();
@@ -71,7 +73,7 @@ public class AppleIdUtils {
                     resultApple = value.getApple();
                 }
             }
-        }
+        }*/
         if (resultApple == null){
             HcApple apple = new HcApple();
             apple.setIsUse("0");

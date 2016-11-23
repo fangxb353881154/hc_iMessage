@@ -10,10 +10,14 @@ import com.thinkgem.jeesite.modules.imessage.entity.HcTaskChild;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskPhone;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import org.apache.commons.codec.language.Soundex;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,15 +38,28 @@ public class TxtUtils {
     public static Logger logger = LoggerFactory.getLogger(TxtUtils.class);
 
     public static String getRequestPath(String path) {
-        path = Global.getConfig("task.txt.path") + path;
-      /*  HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        path = request.getSession().getServletContext().getRealPath("") + path;*/
-        File file = new File(path);
-        if (!file.exists() && !file.isDirectory()) {
-            System.out.println("TxtUtils.getRequestPath " + path + "目录不存在，需要创建");
-            //创建目录
-            file.mkdir();
+        ResourceLoader resourceLoader = new DefaultResourceLoader();
+        Resource resource = resourceLoader.getResource("");
+        try {
+            String classPath = resource.getURL().getPath();
+            if (classPath.startsWith("/")) {
+                classPath = classPath.substring(1);
+            }
+            classPath = classPath.substring(0, classPath.indexOf("/WEB-INF/"));
+
+            path = classPath + path;
+
+            File file = new File(path);
+            if (!file.exists() && !file.isDirectory()) {
+                System.out.println("TxtUtils.getRequestPath " + path + "目录不存在，需要创建");
+                //创建目录
+                file.mkdir();
+            }
+            System.out.println(path);
+        } catch (IOException e) {
+            throw new RuntimeException("获取任务文件夹失败！");
         }
+
         return path;
     }
 
@@ -144,10 +161,7 @@ public class TxtUtils {
 
     public static String getFileName(HcTaskPhone taskPhone) {
         String fileName = taskPhone.getTaskId() + "_" + taskPhone.getTaskChildId() + ".txt";
-
         fileName = getTxtPathByUserId(taskPhone.getCreateBy().getId()) + getDatePath(taskPhone.getCreateDate()) + fileName;
-
-        logger.info("------------------txt path : " + fileName);
         return fileName;
     }
 
@@ -196,6 +210,5 @@ public class TxtUtils {
         }
         return files;
     }
-
 
 }

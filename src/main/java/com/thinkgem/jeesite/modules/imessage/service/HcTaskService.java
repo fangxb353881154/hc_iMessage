@@ -172,7 +172,7 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
     /**
      * 任务分组
      */
-    private final static Integer GROUP_NUMBER = 200;
+    private final static Integer GROUP_NUMBER = 20;
 
 
     @Transactional(readOnly = false)

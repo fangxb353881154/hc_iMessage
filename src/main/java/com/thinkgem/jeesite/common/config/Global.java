@@ -68,7 +68,7 @@ public class Global {
 	
 	/**
 	 * 获取配置
-	 * @see ${fns:getConfig('adminPath')}
+	 * @see {fns:getConfig('adminPath')}
 	 */
 	public static String getConfig(String key) {
 		String value = map.get(key);
@@ -78,7 +78,12 @@ public class Global {
 		}
 		return value;
 	}
-	
+
+	public static void setConfig(String key, String value) {
+		map.put(key, value);
+	}
+
+
 	/**
 	 * 获取管理端根路径
 	 */
@@ -118,7 +123,7 @@ public class Global {
     
 	/**
 	 * 页面获取常量
-	 * @see ${fns:getConst('YES')}
+	 * @see {fns:getConst('YES')}
 	 */
 	public static Object getConst(String field) {
 		try {
@@ -180,5 +185,4 @@ public class Global {
 		}
 		return projectPath;
     }
-	
 }

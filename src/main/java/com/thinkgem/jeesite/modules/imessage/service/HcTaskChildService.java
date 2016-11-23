@@ -79,47 +79,59 @@ public class HcTaskChildService extends CrudService<HcTaskChildDao, HcTaskChild>
 
     @Transactional(readOnly = false)
     public void recycleTaskChild(List<HcTaskChild> taskChildList) {
-        for (HcTaskChild taskChild : taskChildList) {
-            new RecycleTaskChild(taskChild).start();
+        int count = taskChildList.size();
+        int over = count / 10;
+        if ((count % 10) > 0) {
+            over++;
+        }
+        logger.info("---------------------------回收总数：" + taskChildList.size() + "            每组线程：" + over);
+        int listInt = 0;
+        while (listInt < count) {
+            List<HcTaskChild> list = taskChildList.subList(listInt, (listInt + over) > count ? count : listInt + over);
+            new RecycleTaskChild(list).start();
+            listInt += over;
         }
     }
 
     public class RecycleTaskChild extends Thread {
-        private HcTaskChild taskChild;
 
-        public RecycleTaskChild(HcTaskChild taskChild) {
-            this.taskChild = taskChild;
+        private List<HcTaskChild> taskChildList;
+
+        public RecycleTaskChild(List<HcTaskChild> taskChildList) {
+            this.taskChildList = taskChildList;
         }
 
         public void run() {
-            HcTaskPhone phone = new HcTaskPhone();
-            phone.setTaskId(taskChild.getTaskId());
-            phone.setTaskChildId(taskChild.getId());
-            phone.setCreateDate(taskChild.getCreateDate());
-            phone.setCreateBy(taskChild.getCreateBy());
-            phone.setTaskStatus(null);
-            List<HcTaskPhone> phoneList = hcTaskPhoneDao.findList(phone);
-            List<String> txtPhoneList = TxtUtils.readTxt(phone);
-            //指定号码+随机号码 -> 读取txt文件
-            if (txtPhoneList != null && txtPhoneList.size() > 0 && phoneList.size() != txtPhoneList.size()) {
-                for (HcTaskPhone taskPhone : phoneList) {
-                    for (int i = 0; i < txtPhoneList.size(); i++) {
-                        if (StringUtils.equals(txtPhoneList.get(i), taskPhone.getPhone())) {
-                            txtPhoneList.remove(i);
-                            i--;
+            for (HcTaskChild taskChild : this.taskChildList) {
+                HcTaskPhone phone = new HcTaskPhone();
+                phone.setTaskId(taskChild.getTaskId());
+                phone.setTaskChildId(taskChild.getId());
+                phone.setCreateDate(taskChild.getCreateDate());
+                phone.setCreateBy(taskChild.getCreateBy());
+                phone.setTaskStatus(null);
+                List<HcTaskPhone> phoneList = hcTaskPhoneDao.findList(phone);
+                List<String> txtPhoneList = TxtUtils.readTxt(phone);
+                //指定号码+随机号码 -> 读取txt文件
+                if (txtPhoneList != null && txtPhoneList.size() > 0 && phoneList.size() != txtPhoneList.size()) {
+                    for (HcTaskPhone taskPhone : phoneList) {
+                        for (int i = 0; i < txtPhoneList.size(); i++) {
+                            if (StringUtils.equals(txtPhoneList.get(i), taskPhone.getPhone())) {
+                                txtPhoneList.remove(i);
+                                i--;
+                            }
                         }
                     }
+                    phone.setPhoneList(txtPhoneList);
+                    TxtUtils.writeTxt(phone);//将剩余未发送号码回填txt
                 }
-                phone.setPhoneList(txtPhoneList);
-                TxtUtils.writeTxt(phone);//将剩余未发送号码回填txt
-            }
 
-            if (txtPhoneList != null && txtPhoneList.size() > 0) {
-                taskChild.setTaskStatus("4");//已收回
-            } else {
-                taskChild.setTaskStatus("1");
+                if (txtPhoneList != null && txtPhoneList.size() > 0) {
+                    taskChild.setTaskStatus("4");//已收回
+                } else {
+                    taskChild.setTaskStatus("1");
+                }
+                dao.update(taskChild);
             }
-            dao.update(taskChild);
         }
     }
 }
