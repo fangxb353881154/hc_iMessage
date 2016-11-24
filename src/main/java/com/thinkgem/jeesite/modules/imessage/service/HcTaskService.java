@@ -62,6 +62,9 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
 
     @Transactional(readOnly = false)
     public void update(HcTask hcTask) {
+        String content = EmojiUtils.emojiConvert(hcTask.getContent());
+        DesUtils desUtils = new DesUtils();
+        hcTask.setContent(desUtils.encryptString(content));
         hcTask.preUpdate();
         dao.update(hcTask);
     }
@@ -114,6 +117,8 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
             if (StringUtils.equals(hcTask.getType(), "3")) {
                 hcTask.setPhoneList(getPhoneListByTaskAreaId(hcTask.getArea().getId(), count));
             }
+
+            int GROUP_NUMBER = Integer.valueOf(ConfigUtils.get("child.group.number"));
 
             List<String> phoneList = hcTask.getPhoneList();
             if (phoneList != null && phoneList.size() == count) {
@@ -172,7 +177,6 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
     /**
      * 任务分组
      */
-    private final static Integer GROUP_NUMBER = 20;
 
 
     @Transactional(readOnly = false)
@@ -231,15 +235,6 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
     }
 
 
-    /**
-     * 号码库文件夹地址
-     * txt文件前缀
-     * 地区分隔符 ：  福建@厦门
-     */
-    private String AREA_prefix = "phone-";
-    private String AREA_separator = "@";
-
-
     public List<String> getPhoneListByTaskAreaId(String areaId, Integer limit) {
         List<String> phoneList = getPhoneListByTaskAreaId(areaId);
         if (phoneList != null && limit <= phoneList.size()) {
@@ -268,16 +263,17 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
     }
 
     public File[] getFilesByTaskAreaId(String areaId) {
-        String txtName = AREA_prefix;
+        String txtName = ConfigUtils.get("phone.library.prefix");
+
         //areaId不为空and不等于0
         if (StringUtils.isNotEmpty(areaId) && !StringUtils.equals(areaId, "0")) {
             Area area = areaDao.get(areaId);
             //3：地市 => 获取父级
             if (StringUtils.equals(area.getType(), "3")) {
                 Area pArea = areaDao.get(area.getParentId());
-                txtName += pArea.getName() + AREA_separator + area.getName();
+                txtName += pArea.getName() + ConfigUtils.get("phone.library.separator") + area.getName();
             } else {
-                txtName += area.getName() + AREA_separator;
+                txtName += area.getName() + ConfigUtils.get("phone.library.separator");
             }
         }
         //String txtPath = getDbTxtPath();

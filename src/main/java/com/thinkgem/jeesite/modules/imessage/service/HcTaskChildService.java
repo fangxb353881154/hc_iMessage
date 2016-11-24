@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.imessage.service;
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.ConfigUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.imessage.TxtUtils;
 import com.thinkgem.jeesite.modules.imessage.dao.HcTaskChildDao;
@@ -80,8 +81,9 @@ public class HcTaskChildService extends CrudService<HcTaskChildDao, HcTaskChild>
     @Transactional(readOnly = false)
     public void recycleTaskChild(List<HcTaskChild> taskChildList) {
         int count = taskChildList.size();
-        int over = count / 10;
-        if ((count % 10) > 0) {
+        int taskSize = Integer.parseInt(ConfigUtils.get("task.recycle.size"));
+        int over = count / taskSize;
+        if ((count % taskSize) > 0) {
             over++;
         }
         logger.info("---------------------------回收总数：" + taskChildList.size() + "            每组线程：" + over);

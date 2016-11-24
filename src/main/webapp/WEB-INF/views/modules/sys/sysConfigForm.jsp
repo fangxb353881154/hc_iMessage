@@ -53,7 +53,7 @@
 		<div class="control-group">
 			<label class="control-label">描述：</label>
 			<div class="controls">
-				<form:input path="depict" htmlEscape="false" maxlength="255" class="input-xlarge "/>
+				<form:textarea path="depict" htmlEscape="false" rows="3" maxlength="255" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="form-actions">

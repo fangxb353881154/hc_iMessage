@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.sys.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.utils.ConfigUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -68,8 +69,9 @@ public class SysConfigController extends BaseController {
 			return form(sysConfig, model);
 		}
 		sysConfigService.save(sysConfig);
+		ConfigUtils.set(sysConfig);
 		addMessage(redirectAttributes, "保存配置成功");
-		return "redirect:"+Global.getAdminPath()+"/sys/sysConfig/list?repage";
+		return "redirect:"+Global.getAdminPath()+"/sys/config/list?repage";
 	}
 	
 	@RequiresPermissions("sys:sysConfig:edit")
@@ -77,7 +79,7 @@ public class SysConfigController extends BaseController {
 	public String delete(SysConfig sysConfig, RedirectAttributes redirectAttributes) {
 		sysConfigService.delete(sysConfig);
 		addMessage(redirectAttributes, "删除配置成功");
-		return "redirect:"+Global.getAdminPath()+"/sys/sysConfig/list?repage";
+		return "redirect:"+Global.getAdminPath()+"/sys/config/list?repage";
 	}
 
 }

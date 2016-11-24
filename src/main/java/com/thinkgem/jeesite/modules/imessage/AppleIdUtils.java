@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
+import com.thinkgem.jeesite.common.utils.ConfigUtils;
 import com.thinkgem.jeesite.common.utils.SpringContextHolder;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.imessage.dao.HcAppleDao;
@@ -45,35 +46,36 @@ public class AppleIdUtils {
                 CacheUtils.put(APPLE_KEY_, map);
             }
         }catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
     public static HcApple getApple(User user) {
-        //Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
         HcApple resultApple = null;
-        //int useNumber = Integer.parseInt(Global.getConfig("appleId.use.number"));
-        /*if (map != null) {
-            Iterator it = map.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                String key = (String) entry.getKey();
-                AppleVo value = (AppleVo) entry.getValue();
+        int useNumber = Integer.parseInt(ConfigUtils.get("appleId.use.number"));
+        //获取配置 > 1
+        if (useNumber > 1) {
+            Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
+            if (map != null) {
+                Iterator it = map.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry entry = (Map.Entry) it.next();
+                    String key = (String) entry.getKey();
+                    AppleVo value = (AppleVo) entry.getValue();
 
-                logger.debug("-----getApple       key:" + key + "      appleId" + value.getApple().getAppleId());
-
-                if (value != null && StringUtils.equals(value.getApple().getCreateBy().getId(), user.getId())) {
-                    value.setNumber(value.getNumber() + 1);
-                    if (value.getNumber() >= 2) {
-                        map.remove(key);
-                    }else {
-                        map.put(key, value);
+                    if (value != null && StringUtils.equals(value.getApple().getCreateBy().getId(), user.getId())) {
+                        value.setNumber(value.getNumber() + 1);
+                        if (value.getNumber() >= useNumber) {
+                            map.remove(key);
+                        }else {
+                            map.put(key, value);
+                        }
+                        resultApple = value.getApple();
+                        logger.debug("--------------------cache getApple           appleId:" + resultApple.getAppleId());
                     }
-                    logger.debug("           password:" + value.getApple().getApplePwd() + "          num:" + value.getNumber());
-                    resultApple = value.getApple();
                 }
             }
-        }*/
+        }
         if (resultApple == null){
             HcApple apple = new HcApple();
             apple.setIsUse("0");
