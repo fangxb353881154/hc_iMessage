@@ -49,7 +49,14 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
     private AreaDao areaDao;
 
     public HcTask get(String id) {
-        return super.get(id);
+        HcTask hcTask = super.get(id);
+        try {
+            DesUtils desUtils = new DesUtils();
+            String content = desUtils.decryptString(hcTask.getContent());
+            hcTask.setContent(EmojiUtils.emojiRecovery(content));
+        } catch (Exception e) {
+        }
+        return hcTask;
     }
 
     public List<HcTask> findList(HcTask hcTask) {

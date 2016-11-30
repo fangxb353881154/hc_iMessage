@@ -297,12 +297,8 @@ public class UserUtils {
 		getSession().removeAttribute(key);
 	}
 	
-//	public static Map<String, Object> getCacheMap(){
-//		Principal principal = getPrincipal();
-//		if(principal!=null){
-//			return principal.getCacheMap();
-//		}
-//		return new HashMap<String, Object>();
-//	}
-	
+	public static boolean getUserIsAdmin()	{
+		User user = getUser();
+		return user.isAdmin();
+	}
 }

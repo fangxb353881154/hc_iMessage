@@ -30,23 +30,26 @@ public class AppleIdUtils {
     public static Logger logger = LoggerFactory.getLogger(AppleIdUtils.class);
 
     public static void setApple(HcApple apple) {
-        try {
-            Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
-            if (map == null) {
-                map = Maps.newHashMap();
+        int useNumber = Integer.parseInt(ConfigUtils.get("appleId.use.number"));
+        if (useNumber > 1) {
+            try {
+                Map<String, Object> map = (Map) CacheUtils.get(APPLE_KEY_);
+                if (map == null) {
+                    map = Maps.newHashMap();
+                }
+                AppleVo vo = (AppleVo) map.get(apple.getId());
+                if (vo == null) {
+                    //不存在初始化
+                    vo = new AppleVo();
+                    vo.setNumber(1);
+                    vo.setApple(apple);
+                    map.put(apple.getId(), vo);
+                    //加入缓存
+                    CacheUtils.put(APPLE_KEY_, map);
+                }
+            }catch (Exception e){
+                //e.printStackTrace();
             }
-            AppleVo vo = (AppleVo) map.get(apple.getId());
-            if (vo == null) {
-                //不存在初始化
-                vo = new AppleVo();
-                vo.setNumber(1);
-                vo.setApple(apple);
-                map.put(apple.getId(), vo);
-                //加入缓存
-                CacheUtils.put(APPLE_KEY_, map);
-            }
-        }catch (Exception e){
-            //e.printStackTrace();
         }
     }
 
@@ -81,10 +84,13 @@ public class AppleIdUtils {
             apple.setIsUse("0");
             apple.setCreateBy(user);
             List<HcApple> appleList = hcAppleDao.findList(apple);
-            if (appleList == null || appleList.size() == 0) {
-                //批量还原ID 使用状态
-                hcAppleDao.updateAllIsUse(apple);
-                appleList = hcAppleDao.findList(apple);
+            String isCycle = ConfigUtils.get("appleId.use.isCycle");
+            if (StringUtils.equals(isCycle, "1")) {
+                if (appleList == null || appleList.size() == 0) {
+                    //批量还原ID 使用状态
+                    hcAppleDao.updateAllIsUse(apple);
+                    appleList = hcAppleDao.findList(apple);
+                }
             }
             if (appleList != null && appleList.size() > 0) {
                 resultApple = appleList.get(0);

@@ -143,17 +143,18 @@
 
 	<!-- 统计发送记录 更新子任务-->
 	<update id="updateNumberGroupByChildId">
-		update hc_task_child cc ,(
-			SELECT p.task_child_id,
-				sum(case when p.task_status='1' then 1 else 0 end) as success_tatus ,
-				sum(case when p.task_status='0' then 1 else 0 end) as failure_tatus,
-				count(1) as count
-			FROM hc_task_child c JOIN hc_task_phone p on c.task_status = '2' and c.id = p.task_child_id GROUP BY p.task_child_id
-		) as aa
-		set cc.send_number = aa.count ,
-		cc.success_number = aa.success_tatus,
-		cc.task_status = (CASE WHEN cc.count = aa.count then '1' else cc.task_status end)
-		where cc.id = aa.task_child_id
+		<![CDATA[
+			update hc_task_child cc ,(
+				SELECT p.task_child_id,
+					sum(case when p.task_status='1' then 1 else 0 end) as success_tatus ,
+					count(1) as count
+				FROM  hc_task_phone p  GROUP BY p.task_child_id
+			) as aa
+			set cc.send_number = aa.count ,
+				cc.success_number = aa.success_tatus,
+				cc.task_status = (CASE WHEN cc.count <= aa.count then '1' else cc.task_status end)
+			where  cc.task_status='2' and cc.id = aa.task_child_id
+		]]>
 	</update>
 
 	<!-- 获取需要回收的子任务 -->

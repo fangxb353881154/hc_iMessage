@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -47,8 +48,7 @@ public class TxtUtils {
             }
             classPath = classPath.substring(0, classPath.indexOf("/WEB-INF/"));
 
-            path = classPath + path;
-
+            path = URLDecoder.decode(classPath + path, "utf-8");
             File file = new File(path);
             if (!file.exists() && !file.isDirectory()) {
                 System.out.println("TxtUtils.getRequestPath " + path + "目录不存在，需要创建");
@@ -59,7 +59,6 @@ public class TxtUtils {
         } catch (IOException e) {
             throw new RuntimeException("获取任务文件夹失败！");
         }
-
         return path;
     }
 
@@ -69,10 +68,7 @@ public class TxtUtils {
         //判断目标文件所在的目录是否存在
         if (!file.getParentFile().exists()) {
             //如果目标文件所在的目录不存在，则创建父目录
-            System.out.println("------------------目标文件所在目录不存在--------------");
-            /*if (!file.getParentFile().mkdirs()) {
-                throw new RuntimeException("创建目标文件所在目录失败！");
-            }*/
+            logger.warn("------------------目标文件所在目录不存在--------------");
         }
         return readTxt(file);
     }
@@ -89,6 +85,8 @@ public class TxtUtils {
                 strList.add(read);
             }
         } catch (IOException e) {
+            logger.warn("----------------------------txt file:" + file.getPath());
+            logger.warn("文件读取失败，" + e.getMessage());
             throw new RuntimeException("读取任务发送号码txt文件失败！");
         } finally {
             if (bufRead != null) {
@@ -115,7 +113,7 @@ public class TxtUtils {
             //判断目标文件所在的目录是否存在
             if (!file.getParentFile().exists()) {
                 //如果目标文件所在的目录不存在，则创建父目录
-                System.out.println("------------------目标文件所在目录不存在，准备创建它！");
+                logger.warn("------------------目标文件所在目录不存在，准备创建它！");
                 if (!file.getParentFile().mkdirs()) {
                     throw new RuntimeException("创建目标文件所在目录失败！");
                 }
@@ -162,6 +160,7 @@ public class TxtUtils {
     public static String getFileName(HcTaskPhone taskPhone) {
         String fileName = taskPhone.getTaskId() + "_" + taskPhone.getTaskChildId() + ".txt";
         fileName = getTxtPathByUserId(taskPhone.getCreateBy().getId()) + getDatePath(taskPhone.getCreateDate()) + fileName;
+        //logger.info("------------------txt path : " + fileName);
         return fileName;
     }
 

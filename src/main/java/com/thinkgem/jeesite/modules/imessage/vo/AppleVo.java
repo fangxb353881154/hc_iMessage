@@ -2,10 +2,12 @@ package com.thinkgem.jeesite.modules.imessage.vo;
 
 import com.thinkgem.jeesite.modules.imessage.entity.HcApple;
 
+import java.io.Serializable;
+
 /**
  * Created by asus on 2016/11/19.
  */
-public class AppleVo {
+public class AppleVo implements Serializable {
     public HcApple apple;
     public Integer number;
 

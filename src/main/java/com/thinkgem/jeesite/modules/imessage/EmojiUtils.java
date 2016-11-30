@@ -36,7 +36,6 @@ public class EmojiUtils {
             }
         }
         matcher.appendTail(sb);
-        logger.debug("emojiConvert " + str + " to " + sb.toString() + ", len：" + sb.length());
         return sb.toString();
     }
 
@@ -60,7 +59,6 @@ public class EmojiUtils {
             }
         }
         matcher.appendTail(sb);
-        logger.debug("emojiRecovery " + str + " to " + sb.toString());
         return sb.toString();
     }
 }

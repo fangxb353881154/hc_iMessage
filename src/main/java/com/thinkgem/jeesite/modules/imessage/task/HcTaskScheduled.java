@@ -53,7 +53,7 @@ public class HcTaskScheduled {
      *
      * 判断子任务 处于'处理中'状态长达1个小时
      */
-    @Scheduled(cron = "0 0/20 * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void recycleTaskChild() {
         logger.info("-------------------------------定时回收任务------------------ ");
         List<HcTaskChild> taskChildList = hcTaskChildService.getRecycleTaskChild();

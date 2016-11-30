@@ -55,6 +55,13 @@
     <function-signature>com.thinkgem.jeesite.modules.sys.entity.User getUser()</function-signature>
     <example>${fns:getUser()}</example>  
   </function>
+  <function>
+    <description>获取当前用户对象</description>
+    <name>getUserIsAdmin</name>
+    <function-class>com.thinkgem.jeesite.modules.sys.utils.UserUtils</function-class>
+    <function-signature>boolean getUserIsAdmin()</function-signature>
+    <example>${fns:getUserIsAdmin()}</example>
+  </function>
   
   <function>
     <description>根据编码获取用户对象</description>

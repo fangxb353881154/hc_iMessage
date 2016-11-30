@@ -165,23 +165,25 @@
 
 
 	<update id="updateNumberGroupByTaskId">
-		UPDATE hc_task tt,
-		 (
-			SELECT
-				c.task_id,
-				SUM(c.send_number) AS send_number,
-				SUM(c.success_number) AS success_number
-			FROM
-				hc_task t
-			JOIN hc_task_child c ON t.task_status = '2'
-			AND t.id = c.task_id
-			GROUP BY
-				c.task_id
-		) aa
-		SET tt.success_number = aa.success_number,
-		tt.task_status = (CASE WHEN tt.count = aa.send_number THEN '1' ELSE tt.task_status END),
-		tt.send_number = aa.send_number
-		WHERE
-			tt.id = aa.task_id
+		<![CDATA[
+			UPDATE hc_task tt,
+			 (
+				SELECT
+					c.task_id,
+					SUM(c.send_number) AS send_number,
+					SUM(c.success_number) AS success_number
+				FROM
+					hc_task t
+				JOIN hc_task_child c ON t.task_status = '2' and t.del_flag='0'
+				AND t.id = c.task_id
+				GROUP BY
+					c.task_id
+			) aa
+			SET tt.success_number = aa.success_number,
+			tt.task_status = (CASE WHEN tt.count <= aa.send_number THEN '1' ELSE tt.task_status END),
+			tt.send_number = (CASE WHEN tt.count <= aa.send_number THEN tt.count ELSE aa.send_number END)
+			WHERE
+				tt.id = aa.task_id
+		]]>
 	</update>
 </mapper>

@@ -49,6 +49,10 @@
             &nbsp;&nbsp;&nbsp;&nbsp;
             <input type="button" class="btn btn-warning" value="一键清空任务" id="btnDeleteAll"
                    onclick="return confirmx('确认要清空所有任务吗？', '${ctx}/imessage/task/deleteAll');"/>
+           <c:if test="${fns:getUserIsAdmin()}">
+               &nbsp;&nbsp;&nbsp;&nbsp;
+               <input type="button" class="btn btn-danger" value="导出所有成功号码" id="btnUpdateAllIsUse" onclick="return confirmx('确认导出所有成功号码吗？', '${ctx}/imessage/task/exportPhoneAll');"/>
+           </c:if>
         </li>
         <li class="clearfix"></li>
     </ul>
