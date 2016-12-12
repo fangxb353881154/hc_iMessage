@@ -184,6 +184,7 @@ public class InterfaceApiController extends BaseController{
             hcTaskPhoneService.save(taskPhone);
             return ResultUtils.getSuccess();
         } catch (Exception e) {
+            logger.debug(e.getMessage());
             return ResultUtils.getFailure("更新失败，mobile=" + taskPhone.getPhone() + "  " + e.getMessage());
         }
     }

@@ -45,4 +45,16 @@ public interface HcTaskChildDao extends CrudDao<HcTaskChild> {
      * @return
      */
     List<HcTaskChild> getRecycleTaskChild();
+
+    /**
+     * 短信发送成功
+     * @param id
+     */
+    void updateNumberSendSuccess(String id);
+
+    /**
+     * 发送失败
+     * @param id
+     */
+    void updateNumberSendFailure(String id);
 }

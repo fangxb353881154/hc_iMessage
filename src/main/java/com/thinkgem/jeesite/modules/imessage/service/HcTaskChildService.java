@@ -3,7 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.imessage.service;
 
-import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.ConfigUtils;
@@ -31,6 +30,8 @@ import java.util.List;
 public class HcTaskChildService extends CrudService<HcTaskChildDao, HcTaskChild> {
 
     @Autowired
+    private HcTaskPhoneService hcTaskPhoneService;
+    @Autowired
     private HcTaskPhoneDao hcTaskPhoneDao;
 
     public HcTaskChild get(String id) {
@@ -55,6 +56,24 @@ public class HcTaskChildService extends CrudService<HcTaskChildDao, HcTaskChild>
         super.delete(hcTask);
     }
 
+    @Transactional(readOnly = false)
+    public void deleteByTaskId(String taskId) {
+        HcTaskChild child = new HcTaskChild();
+        child.setTaskId(taskId);
+        List<HcTaskChild> taskChildList = dao.findList(child);
+        if (taskChildList != null) {
+            for (HcTaskChild c : taskChildList) {
+                if (Integer.valueOf(c.getSendNumber()) - Integer.valueOf(c.getSuccessNumber()) > 0) {
+                    //有失败的数据
+                    HcTaskPhone taskPhone = new HcTaskPhone();
+                    taskPhone.setTaskId(c.getTaskId());
+                    taskPhone.setTaskChildId(c.getId());
+                    hcTaskPhoneDao.deleteByTaskIdChildId(taskPhone);
+                }
+            }
+            dao.deleteByTaskId(taskId);
+        }
+    }
 
     public HcTaskChild getTaskChildByTaskId(String taskId) {
         HcTaskChild child = new HcTaskChild();
@@ -70,10 +89,19 @@ public class HcTaskChildService extends CrudService<HcTaskChildDao, HcTaskChild>
         return null;
     }
 
+    /**
+     * 获取一条可执行任务
+     * @param user
+     * @return
+     */
     public HcTaskChild getTaskByInterface(User user) {
         return dao.getTaskByInterface(user);
     }
 
+    /**
+     * 获取需要回收的子任务
+     * @return
+     */
     public List<HcTaskChild> getRecycleTaskChild() {
         return dao.getRecycleTaskChild();
     }
@@ -111,7 +139,7 @@ public class HcTaskChildService extends CrudService<HcTaskChildDao, HcTaskChild>
                 phone.setCreateDate(taskChild.getCreateDate());
                 phone.setCreateBy(taskChild.getCreateBy());
                 phone.setTaskStatus(null);
-                List<HcTaskPhone> phoneList = hcTaskPhoneDao.findList(phone);
+                List<HcTaskPhone> phoneList = hcTaskPhoneService.findList(phone);
                 List<String> txtPhoneList = TxtUtils.readTxt(phone);
                 //指定号码+随机号码 -> 读取txt文件
                 if (txtPhoneList != null && txtPhoneList.size() > 0 && phoneList.size() != txtPhoneList.size()) {

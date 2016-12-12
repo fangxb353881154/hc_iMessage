@@ -26,7 +26,7 @@
 	<select id="findList" resultType="HcTaskPhone">
 		SELECT 
 			<include refid="hcTaskPhoneColumns"/>
-		FROM hc_task_phone a
+		FROM #{tableName} a
 		<include refid="hcTaskPhoneJoins"/>
 		<where>
 			1=1
@@ -69,7 +69,7 @@
 	</select>
 	
 	<insert id="insert">
-		INSERT INTO hc_task_phone(
+		INSERT INTO ${tableName}(
 			id,
 			task_id,
 			phone,
@@ -89,7 +89,7 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE hc_task_phone SET 	
+		UPDATE #{tableName} SET
 			task_id = #{taskId},
 			phone = #{phone},
 			task_status = #{taskStatus}
@@ -105,14 +105,18 @@
 	</select>
 
 	<update id="delete">
-		DELETE FROM hc_task_phone WHERE id = #{id}
+		DELETE FROM hc_task_phone_0 WHERE id = #{id}
 	</update>
 
 	<update id="deleteByTaskId">
-		DELETE FROM hc_task_phone WHERE task_id = #{taskId};
+		DELETE FROM hc_task_phone_0 WHERE task_id = #{taskId};
+	</update>
+
+	<update id="deleteByTaskIdChildId">
+		DELETE FROM hc_task_phone_0 WHERE task_id = #{taskId} AND task_child_id =#{taskChildId}
 	</update>
 
 	<update id="deleteAll">
-		DELETE FROM hc_task_phone WHERE create_by = #{id}
+		DELETE FROM hc_task_phone_0 WHERE create_by = #{id}
 	</update>
 </mapper>

@@ -20,6 +20,7 @@ public class HcTaskChild extends DataEntity<HcTaskChild> {
 	private String taskId;		// 父任务id
 	private String count;		// 号码数
 	private String taskStatus;		// 子任务状态 [0-未完成 1-已完成 2-处理中]
+	private String sendNumber;
 	private String successNumber;		// success_number
 	
 	public HcTaskChild() {
@@ -65,5 +66,12 @@ public class HcTaskChild extends DataEntity<HcTaskChild> {
 	public void setSuccessNumber(String successNumber) {
 		this.successNumber = successNumber;
 	}
-	
+
+	public String getSendNumber() {
+		return sendNumber;
+	}
+
+	public void setSendNumber(String sendNumber) {
+		this.sendNumber = sendNumber;
+	}
 }

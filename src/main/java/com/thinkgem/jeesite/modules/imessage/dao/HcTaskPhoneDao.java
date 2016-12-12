@@ -22,6 +22,8 @@ public interface HcTaskPhoneDao extends CrudDao<HcTaskPhone> {
      */
     void deleteByTaskId(String taskId);
 
+    void deleteByTaskIdChildId(HcTaskPhone taskPhone);
+
     /**
      * 批量插入
      * @param taskPhone

@@ -47,6 +47,8 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
     private HcRandPhoneDao hcRandPhoneDao;
     @Autowired
     private AreaDao areaDao;
+    @Autowired
+    private HcTaskChildService hcTaskChildService;
 
     public HcTask get(String id) {
         HcTask hcTask = super.get(id);
@@ -155,10 +157,13 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
     @Transactional(readOnly = false)
     public void delete(HcTask hcTask) {
         super.delete(hcTask);
-        hcTaskChildDao.deleteByTaskId(hcTask.getId());
+        //删除子任务+失败的号码
+        hcTaskChildService.deleteByTaskId(hcTask.getId());
+       // hcTaskChildDao.deleteByTaskId(hcTask.getId());
         //
         String path = TxtUtils.getPath(hcTask.getCreateDate(), UserUtils.getUser());
         FileUtils.deleteFile(FileUtils.getFilesByPathPrefix(new File(path), hcTask.getId()));
+
     }
 
 
@@ -321,7 +326,7 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
     public void updateTaskGroup() {
         logger.debug("--------------------------- 统计任务开始："+ new Date());
         //统计发送日志 -> 更新子任务
-        hcTaskChildDao.updateNumberGroupByChildId();
+        //hcTaskChildDao.updateNumberGroupByChildId();
 
         /**
          * 子任务处理后   =>

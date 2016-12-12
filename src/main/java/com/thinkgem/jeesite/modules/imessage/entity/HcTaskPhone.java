@@ -25,7 +25,9 @@ public class HcTaskPhone extends DataEntity<HcTaskPhone> {
 
 	private List<String> phoneList;
 	private List<String> idList;
-	
+
+	private String tableName;
+
 	public HcTaskPhone() {
 		super();
 		taskStatus = "0";
@@ -93,5 +95,10 @@ public class HcTaskPhone extends DataEntity<HcTaskPhone> {
 
 	public void setIdList(List<String> idList) {
 		this.idList = idList;
+	}
+
+	public String getTableName() {
+
+		return "hc_task_phone_" + this.taskStatus;
 	}
 }

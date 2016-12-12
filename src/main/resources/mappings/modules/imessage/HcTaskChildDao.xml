@@ -9,6 +9,7 @@
 		a.update_by AS "updateBy.id",
 		a.create_by AS "createBy.id",
 		a.task_status AS "taskStatus",
+		a.send_number,
 		a.success_number AS "successNumber",
 		a.update_date AS "updateDate",
 		a.create_date AS "createDate",
@@ -175,4 +176,29 @@
  			 WHERE a.task_status = '2' AND a.count > a.send_number AND a.update_date < date_sub(now(), interval 1 hour)
  		 ]]>
 	</select>
+
+	<update id="updateNumberSendSuccess">
+		<![CDATA[
+			UPDATE hc_task_child
+			SET
+			send_number = send_number+1,
+			success_number = success_number+1,
+			task_status = (
+				CASE WHEN count <= send_number THEN '1' ELSE task_status END
+			)
+			WHERE id = #{id}
+		]]>
+	</update>
+
+	<update id="updateNumberSendFailure">
+		<![CDATA[
+			UPDATE hc_task_child
+			SET
+			send_number = send_number+1,
+			task_status = (
+				CASE WHEN count <= send_number THEN '1' ELSE task_status END
+			)
+			WHERE id = #{id}
+		]]>
+	</update>
 </mapper>
