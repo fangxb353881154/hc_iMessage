@@ -15,6 +15,9 @@
 	
 	<!-- 工作流模块缓存 -->
 	<cache name="actCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true"/>
+
+	<!-- 任务号码缓存 -->
+	<cache name="taskPhoneCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true" timeToLiveSeconds="10" timeToIdleSeconds="0" />
 	
 	<!-- 内容管理模块缓存
 	<cache name="cmsCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true"/> -->

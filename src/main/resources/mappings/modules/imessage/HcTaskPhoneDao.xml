@@ -26,7 +26,7 @@
 	<select id="findList" resultType="HcTaskPhone">
 		SELECT 
 			<include refid="hcTaskPhoneColumns"/>
-		FROM #{tableName} a
+		FROM ${tableName} a
 		<include refid="hcTaskPhoneJoins"/>
 		<where>
 			1=1
@@ -89,7 +89,7 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE #{tableName} SET
+		UPDATE ${tableName} SET
 			task_id = #{taskId},
 			phone = #{phone},
 			task_status = #{taskStatus}

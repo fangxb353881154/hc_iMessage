@@ -64,8 +64,9 @@ public class HcTaskPhoneService extends CrudService<HcTaskPhoneDao, HcTaskPhone>
 			}else {
 				hcTaskChildDao.updateNumberSendFailure(taskPhone.getTaskChildId());
 			}
+			taskPhone.preInsert();
+			dao.insert(taskPhone);
 		}
-		super.save(taskPhone);
 	}
 	
 	@Transactional(readOnly = false)

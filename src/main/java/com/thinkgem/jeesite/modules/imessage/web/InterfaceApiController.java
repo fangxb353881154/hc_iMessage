@@ -2,10 +2,7 @@ package com.thinkgem.jeesite.modules.imessage.web;
 
 import com.alibaba.druid.support.json.JSONUtils;
 import com.google.common.collect.Maps;
-import com.thinkgem.jeesite.common.utils.Collections3;
-import com.thinkgem.jeesite.common.utils.DesUtils;
-import com.thinkgem.jeesite.common.utils.ResultUtils;
-import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.utils.*;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.imessage.AppleIdUtils;
 import com.thinkgem.jeesite.modules.imessage.EmojiUtils;
@@ -181,8 +178,13 @@ public class InterfaceApiController extends BaseController{
     @RequestMapping(value = "/phone/mobileResult")
     public Map<String, Object> mobileResult(HcTaskPhone taskPhone) {
         try {
-            hcTaskPhoneService.save(taskPhone);
-            return ResultUtils.getSuccess();
+            if (!isRepeatPhone(taskPhone.getPhone())) {
+                hcTaskPhoneService.save(taskPhone);
+                return ResultUtils.getSuccess();
+            }else{
+                logger.info("----------------------------重复提交 phone:" + taskPhone.getPhone());
+                return ResultUtils.getFailure();
+            }
         } catch (Exception e) {
             logger.debug(e.getMessage());
             return ResultUtils.getFailure("更新失败，mobile=" + taskPhone.getPhone() + "  " + e.getMessage());
@@ -228,5 +230,16 @@ public class InterfaceApiController extends BaseController{
     public void updateTaskChildStatus(HcTaskChild taskChild, String status) {
         taskChild.setTaskStatus(status);
         hcTaskChildService.save(taskChild);
+    }
+
+    public boolean isRepeatPhone(String phone){
+        String cacheKey = "TASK_PHONE_KEY_";
+        String CACHE_ = "taskPhoneCache";
+        Object p = CacheUtils.get(CACHE_, cacheKey + phone);
+        if (p != null && StringUtils.equals(p.toString(), phone)) {
+            return true;
+        }
+        CacheUtils.put(CACHE_, cacheKey + phone, phone);
+        return false;
     }
 }
