@@ -1,13 +1,16 @@
 package com.thinkgem.jeesite.modules.imessage.task;
 
+import com.thinkgem.jeesite.common.utils.ConfigUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.imessage.TxtUtils;
 import com.thinkgem.jeesite.modules.imessage.dao.HcTaskDao;
+import com.thinkgem.jeesite.modules.imessage.entity.HcTask;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskChild;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskPhone;
 import com.thinkgem.jeesite.modules.imessage.service.HcTaskChildService;
 import com.thinkgem.jeesite.modules.imessage.service.HcTaskPhoneService;
 import com.thinkgem.jeesite.modules.imessage.service.HcTaskService;
+import com.thinkgem.jeesite.modules.sys.entity.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,12 +58,31 @@ public class HcTaskScheduled {
      */
     @Scheduled(cron = "0 0/15 * * * ?")
     public void recycleTaskChild() {
-        logger.info("-------------------------------定时回收任务------------------ ");
-        List<HcTaskChild> taskChildList = hcTaskChildService.getRecycleTaskChild();
-        if (taskChildList != null && taskChildList.size() > 0) {
-            hcTaskChildService.recycleTaskChild(taskChildList);
+        //判断是否有开启回收功能
+        String isRecycle = ConfigUtils.get("task.child.isRecycle");
+        if (StringUtils.equals(isRecycle, "1")) {
+            logger.info("-------------------------------定时回收任务------------------ ");
+            HcTask hcTask = new HcTask();
+            hcTask.setTaskStatus("2");
+            List<HcTask> taskList = hcTaskService.findList(hcTask);
+            if (taskList != null && taskList.size() > 0) {
+                int deff = Integer.parseInt(ConfigUtils.get("task.recycle.time"));
+
+                for (HcTask t : taskList) {
+                    if (new Date().getTime() - t.getUpdateDate().getTime() > deff * 60 * 1000) {
+                        //t.setTaskStatus("1");
+                       // hcTaskService.update(t);
+                        logger.info("----------------------------- 任务："+t.getId()+" 未在发送中，不做回收处理 --------------------------------");
+                    }else{
+                        List<HcTaskChild> taskChildList = hcTaskChildService.getRecycleTaskChild(t.getId());
+                        if (taskChildList != null && taskChildList.size() > 0) {
+                            hcTaskChildService.recycleTaskChild(t, taskChildList);
+                        }
+                    }
+                }
+            }
+            logger.info("-------------------------------结束------------------------- ");
         }
-        logger.info("-------------------------------结束------------------------- ");
     }
 
 }

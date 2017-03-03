@@ -8,9 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.collect.Lists;
-import com.thinkgem.jeesite.common.utils.Collections3;
-import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.DesUtils;
+import com.thinkgem.jeesite.common.utils.*;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
@@ -37,7 +35,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTask;
 import com.thinkgem.jeesite.modules.imessage.service.HcTaskService;
 
@@ -221,22 +218,34 @@ public class HcTaskController extends BaseController {
         return "redirect:" + Global.getAdminPath() + "/imessage/task/list?repage";
     }
 
+    /**
+     * 任务回收
+     * @param hcTask
+     * @param redirectAttributes
+     * @return
+     */
     @RequiresPermissions("imessage:task:edit")
     @RequestMapping(value = "recycleChild")
     public String recycleTaskChild(HcTask hcTask,RedirectAttributes redirectAttributes) {
-        if (StringUtils.equals(hcTask.getTaskStatus(), "2")) {
-            HcTaskChild hcTaskChild = new HcTaskChild();
-            hcTaskChild.setTaskId(hcTask.getId());
-            hcTaskChild.setTaskStatus("2");
-            List<HcTaskChild> taskChildList = hcTaskChildService.findList(hcTaskChild);
-            if (taskChildList != null && taskChildList.size() > 0) {
-                hcTaskChildService.recycleTaskChild(taskChildList);
-                addMessage(redirectAttributes, "任务回收成功，请静候几分钟！");
-            }else{
-                addMessage(redirectAttributes, "任务回收失败，失败原因：暂无需要回收的任务！");
-            }
+        String isRecycle = ConfigUtils.get("task.child.isRecycle");
+        if (StringUtils.equals(isRecycle, "1")) {
+            //if (StringUtils.equals(hcTask.getTaskStatus(), "2")) {
+                /*HcTaskChild hcTaskChild = new HcTaskChild();
+                hcTaskChild.setTaskId(hcTask.getId());
+                hcTaskChild.setTaskStatus("2");
+                List<HcTaskChild> taskChildList = hcTaskChildService.findList(hcTaskChild);*/
+                List<HcTaskChild> taskChildList = hcTaskChildService.getRecycleTaskChild(hcTask.getId());
+                if (taskChildList != null && taskChildList.size() > 0) {
+                    hcTaskChildService.recycleTaskChild(hcTask, taskChildList);
+                    addMessage(redirectAttributes, "任务回收成功，请静候几分钟！");
+                }else{
+                    addMessage(redirectAttributes, "任务回收失败，失败原因：暂无需要回收的任务！");
+                }
+           /* }else{
+                addMessage(redirectAttributes, "任务回收失败，失败原因：任务状态非处理中！");
+            }*/
         }else{
-            addMessage(redirectAttributes, "任务回收失败，失败原因：任务状态非处理中！");
+            addMessage(redirectAttributes, "系统未开启任务回收功能，如有需要请联系管理员！");
         }
         return "redirect:" + Global.getAdminPath() + "/imessage/task/?repage";
     }

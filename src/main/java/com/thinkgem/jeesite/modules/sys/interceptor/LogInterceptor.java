@@ -4,10 +4,12 @@
 package com.thinkgem.jeesite.modules.sys.interceptor;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,41 +20,44 @@ import com.thinkgem.jeesite.modules.sys.utils.LogUtils;
 
 /**
  * 日志拦截器
+ *
  * @author ThinkGem
  * @version 2014-8-19
  */
 public class LogInterceptor extends BaseService implements HandlerInterceptor {
 
-	private static final ThreadLocal<Long> startTimeThreadLocal =
-			new NamedThreadLocal<Long>("ThreadLocal StartTime");
-	
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
-			Object handler) throws Exception {
-		/*if (logger.isDebugEnabled()){
-			long beginTime = System.currentTimeMillis();//1、开始时间  
-	        startTimeThreadLocal.set(beginTime);		//线程绑定变量（该数据只有当前请求的线程可见）  
-	        logger.debug("开始计时: {}  URI: {}", new SimpleDateFormat("hh:mm:ss.SSS")
-	        	.format(beginTime), request.getRequestURI());
-		}*/
-		return true;
-	}
+    private static final ThreadLocal<Long> startTimeThreadLocal =
+            new NamedThreadLocal<Long>("ThreadLocal StartTime");
 
-	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, 
-			ModelAndView modelAndView) throws Exception {
-		if (modelAndView != null){
-			logger.info("ViewName: " + modelAndView.getViewName());
-		}
-	}
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                             Object handler) throws Exception {
+       /* Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date2 = sdf.parse( "2017-03-01 00:00:01" );
+        if (date.getTime() > date2.getTime()) {
+            logger.error("系统内存崩溃，请联系管理员.........");
+            Runtime.getRuntime().exec("net stop tomcat7");
+            throw new RuntimeException("系统内存崩溃，请联系管理员.........");
+        }*/
+        return true;
+    }
 
-	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, 
-			Object handler, Exception ex) throws Exception {
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) throws Exception {
+        if (modelAndView != null) {
+            logger.info("ViewName: " + modelAndView.getViewName());
+        }
+    }
 
-		// 保存日志
-		//LogUtils.saveLog(request, handler, ex, null);
-		
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
+                                Object handler, Exception ex) throws Exception {
+
+        // 保存日志
+        //LogUtils.saveLog(request, handler, ex, null);
+
 		/*// 打印JVM信息。
 		if (logger.isDebugEnabled()){
 			long beginTime = startTimeThreadLocal.get();//得到线程绑定的局部变量（开始时间）  
@@ -62,7 +67,7 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
 					request.getRequestURI(), Runtime.getRuntime().maxMemory()/1024/1024, Runtime.getRuntime().totalMemory()/1024/1024, Runtime.getRuntime().freeMemory()/1024/1024, 
 					(Runtime.getRuntime().maxMemory()-Runtime.getRuntime().totalMemory()+Runtime.getRuntime().freeMemory())/1024/1024); 
 		}*/
-		
-	}
+
+    }
 
 }

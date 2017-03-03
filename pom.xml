@@ -583,15 +583,20 @@
 			<artifactId>UserAgentUtils</artifactId>
 			<version>1.17</version>
 		</dependency>
-		
-		<!-- 自定义jar依赖包
-		<dependency>
-			<groupId>com.thinkgem.jeesite</groupId>
-			<artifactId>test-core</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/test-core-1.0.jar</systemPath>
-		</dependency> -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.3</version>
+        </dependency>
+
+        <!-- 自定义jar依赖包
+        <dependency>
+            <groupId>com.thinkgem.jeesite</groupId>
+            <artifactId>test-core</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/test-core-1.0.jar</systemPath>
+        </dependency> -->
 		
 		<!-- 使用 Jetty JSP引擎 
 		<dependency>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache updateCheck="false" name="defaultCache">
 
-	<diskStore path="../temp/jeesite/ehcache" />
+	<diskStore path="../temp/imessage/ehcache" />
 
 	<!-- 默认缓存配置. -->
 	<defaultCache maxEntriesLocalHeap="100" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600"
@@ -17,7 +17,7 @@
 	<cache name="actCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true"/>
 
 	<!-- 任务号码缓存 -->
-	<cache name="taskPhoneCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true" timeToLiveSeconds="10" timeToIdleSeconds="0" />
+	<cache name="taskPhoneCache" maxEntriesLocalHeap="100" eternal="false" overflowToDisk="false" timeToLiveSeconds="100" timeToIdleSeconds="50" />
 	
 	<!-- 内容管理模块缓存
 	<cache name="cmsCache" maxEntriesLocalHeap="100" eternal="true" overflowToDisk="true"/> -->

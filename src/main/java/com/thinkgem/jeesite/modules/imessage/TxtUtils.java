@@ -55,7 +55,6 @@ public class TxtUtils {
                 //创建目录
                 file.mkdir();
             }
-            System.out.println(path);
         } catch (IOException e) {
             throw new RuntimeException("获取任务文件夹失败！");
         }
@@ -160,7 +159,12 @@ public class TxtUtils {
     public static String getFileName(HcTaskPhone taskPhone) {
         String fileName = taskPhone.getTaskId() + "_" + taskPhone.getTaskChildId() + ".txt";
         fileName = getTxtPathByUserId(taskPhone.getCreateBy().getId()) + getDatePath(taskPhone.getCreateDate()) + fileName;
-        //logger.info("------------------txt path : " + fileName);
+        return fileName;
+    }
+
+    public static String getFileName(HcTaskChild taskChild) {
+        String fileName = taskChild.getTaskId() + "_" + taskChild.getId() + ".txt";
+        fileName = getTxtPathByUserId(taskChild.getCreateBy().getId()) + getDatePath(taskChild.getCreateDate()) + fileName;
         return fileName;
     }
 
@@ -170,6 +174,10 @@ public class TxtUtils {
 
     public static void writeTxt(HcTaskPhone taskPhone) {
         writeTxt(getFileName(taskPhone), taskPhone.getPhoneList());
+    }
+
+    public static void writeTxt(HcTaskChild taskChild) {
+        writeTxt(getFileName(taskChild), taskChild.getPhoneList());
     }
 
     public static List<String> readTxt(MultipartFile file) {

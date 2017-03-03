@@ -173,7 +173,10 @@
 				a.create_date AS "createDate",
 				a.del_flag AS "delFlag"
  			 FROM hc_task_child a
- 			 WHERE a.task_status = '2' AND a.count > a.send_number AND a.update_date < date_sub(now(), interval 1 hour)
+ 			 WHERE a.task_status = '2'
+ 			 AND a.count > a.send_number
+ 			 AND a.task_id = #{taskId}
+ 			 AND a.update_date < date_sub(now(), interval #{difference} MINUTE)
  		 ]]>
 	</select>
 
@@ -185,7 +188,7 @@
 			success_number = success_number+1,
 			task_status = (
 				CASE WHEN count <= send_number THEN '1' ELSE task_status END
-			)
+			),update_date = now()
 			WHERE id = #{id}
 		]]>
 	</update>
@@ -197,7 +200,7 @@
 			send_number = send_number+1,
 			task_status = (
 				CASE WHEN count <= send_number THEN '1' ELSE task_status END
-			)
+			),update_date = now()
 			WHERE id = #{id}
 		]]>
 	</update>

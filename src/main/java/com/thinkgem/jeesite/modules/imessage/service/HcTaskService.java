@@ -144,9 +144,9 @@ public class HcTaskService extends CrudService<HcTaskDao, HcTask> {
                     //添加任务号码
                     taskPhone.setTaskChildId(taskChild.getId());
                     taskPhone.setPhoneList(list);
-                    logger.info("-----------------开始写入文件--------------");
+                   // logger.info("-----------------开始写入文件--------------");
                     TxtUtils.writeTxt(taskPhone);//任务号码写入txt文件
-                    logger.info("-----------------开始写入文件 end --------------");
+                   // logger.info("-----------------开始写入文件 end --------------");
                 }
             }else {
                 throw new RuntimeException("保存失败，号码库存不足！");

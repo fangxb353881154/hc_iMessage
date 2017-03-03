@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.imessage.entity.HcTaskChild;
 import com.thinkgem.jeesite.modules.sys.entity.User;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public interface HcTaskChildDao extends CrudDao<HcTaskChild> {
      * 获取需要回收的子任务
      * @return
      */
-    List<HcTaskChild> getRecycleTaskChild();
+    List<HcTaskChild> getRecycleTaskChild(@Param("taskId") String taskId, @Param("difference") Integer difference);
 
     /**
      * 短信发送成功

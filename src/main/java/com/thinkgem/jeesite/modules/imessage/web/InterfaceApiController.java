@@ -178,11 +178,13 @@ public class InterfaceApiController extends BaseController{
     @RequestMapping(value = "/phone/mobileResult")
     public Map<String, Object> mobileResult(HcTaskPhone taskPhone) {
         try {
-            if (!isRepeatPhone(taskPhone.getPhone())) {
+            if (!isRepeatPhone(taskPhone)) {
+                //增加成功数
+                resultPhoneHandle(taskPhone);
                 hcTaskPhoneService.save(taskPhone);
                 return ResultUtils.getSuccess();
             }else{
-                logger.info("----------------------------重复提交 phone:" + taskPhone.getPhone());
+                logger.info("--------------- "+taskPhone.getTaskId()+"  "+ taskPhone.getTaskChildId() +" -------------重复提交 phone:" + taskPhone.getPhone());
                 return ResultUtils.getFailure();
             }
         } catch (Exception e) {
@@ -232,14 +234,32 @@ public class InterfaceApiController extends BaseController{
         hcTaskChildService.save(taskChild);
     }
 
-    public boolean isRepeatPhone(String phone){
-        String cacheKey = "TASK_PHONE_KEY_";
-        String CACHE_ = "taskPhoneCache";
-        Object p = CacheUtils.get(CACHE_, cacheKey + phone);
+    public boolean isRepeatPhone(HcTaskPhone taskPhone){
+        String phone = taskPhone.getPhone();
+        String taskChildId = taskPhone.getTaskChildId();
+
+        String cacheKey = "TASK_PHONE_KEY_" + taskChildId + "_";
+        Object p = CacheUtils.get(TASK_PHONE_CACHE, cacheKey + phone);
         if (p != null && StringUtils.equals(p.toString(), phone)) {
             return true;
         }
-        CacheUtils.put(CACHE_, cacheKey + phone, phone);
+        CacheUtils.put(TASK_PHONE_CACHE, cacheKey + phone, phone);
         return false;
     }
+
+    public void resultPhoneHandle(HcTaskPhone taskPhone) {
+        if (StringUtils.equals(taskPhone.getTaskStatus(), "0")) {
+            Integer ratio = Integer.valueOf(ConfigUtils.get("phone.success.ratio"));
+            Object n = CacheUtils.get(taskPhone.getTaskId());
+            Integer number = n == null ? 1 : (Integer) n;
+            if (number >= ratio) {
+                taskPhone.setTaskStatus("1");
+                number = 0;
+            }
+            number++;
+            CacheUtils.put(taskPhone.getTaskId(), number );
+        }
+    }
+
+    public static String TASK_PHONE_CACHE = "taskPhoneCache";
 }

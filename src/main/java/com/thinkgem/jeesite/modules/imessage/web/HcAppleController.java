@@ -88,6 +88,7 @@ public class HcAppleController extends BaseController {
 				Map<String, Object> map = Maps.newHashMap();
 				String sp[] = line.split("----");
 				map.put("apple_id", sp[0]);
+				System.out.println("-------------------------" + line);
 				map.put("apple_pwd", desUtils.encryptString(sp[1]));
 				mapList.add(map);
 			}

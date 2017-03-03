@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.List;
+
 /**
  * 子任务Entity
  * @author fangxb
@@ -22,6 +24,8 @@ public class HcTaskChild extends DataEntity<HcTaskChild> {
 	private String taskStatus;		// 子任务状态 [0-未完成 1-已完成 2-处理中]
 	private String sendNumber;
 	private String successNumber;		// success_number
+
+	private List<String> phoneList;
 	
 	public HcTaskChild() {
 		super();
@@ -73,5 +77,13 @@ public class HcTaskChild extends DataEntity<HcTaskChild> {
 
 	public void setSendNumber(String sendNumber) {
 		this.sendNumber = sendNumber;
+	}
+
+	public List<String> getPhoneList() {
+		return phoneList;
+	}
+
+	public void setPhoneList(List<String> phoneList) {
+		this.phoneList = phoneList;
 	}
 }
